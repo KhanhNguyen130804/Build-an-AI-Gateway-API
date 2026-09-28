@@ -1,0 +1,43 @@
+{
+  "phase": "01",
+  "verified_at_utc": "2026-09-28T09:31:20.910814+00:00",
+  "scope": "Local HTTP foundation only",
+  "python": "3.12.14",
+  "test_suite": {
+    "passed": 20,
+    "command": "python -m pytest -q"
+  },
+  "lint": "PASS",
+  "dependency_check": "PASS",
+  "http_checks": [
+    {
+      "path": "/health/live",
+      "status": 200,
+      "request_id": "bf7674a3-4797-4c2c-85fc-52fdb63096c3"
+    },
+    {
+      "path": "/health/ready",
+      "status": 503,
+      "request_id": "24f3491e-0ac3-4231-82f3-1c459395bb1f"
+    },
+    {
+      "path": "/docs",
+      "status": 200,
+      "request_id": "7ee759d6-f09e-4d28-af85-fd2a37e4dd0a"
+    },
+    {
+      "path": "/openapi.json",
+      "status": 200,
+      "request_id": "5ea2fca7-cf3a-492f-968e-63e6ec21a31c"
+    },
+    {
+      "path": "/not-implemented",
+      "status": 404,
+      "request_id": "1be11276-3094-4328-b760-652da27f252f"
+    }
+  ],
+  "database_live_check": "NOT_RUN",
+  "provider_live_check": "NOT_RUN",
+  "vercel_deployment": "NOT_RUN",
+  "container_build": "NOT_RUN"
+}

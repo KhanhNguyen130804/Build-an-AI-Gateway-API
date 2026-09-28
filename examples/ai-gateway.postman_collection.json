@@ -1,0 +1,342 @@
+{
+  "info": {
+    "name": "AI Gateway — prepared examples",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": "DESIGN ONLY; not run against a server. Set base_url/username/password privately. Run in order to capture token and conversation_id. Export with secret and session variables cleared. Tests are smoke assertions, not the complete acceptance suite."
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{access_token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://127.0.0.1:8000",
+      "type": "string"
+    },
+    {
+      "key": "username",
+      "value": "reviewer",
+      "type": "string"
+    },
+    {
+      "key": "password",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "access_token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "conversation_id",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "01 Liveness",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{base_url}}/health/live",
+        "auth": {
+          "type": "noauth"
+        },
+        "description": "Prepared example; requires an implemented server and configured credentials. Contains no real secret."
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200', function () { pm.response.to.have.status(200); });",
+              "pm.test('Correlation header', function () { pm.expect(pm.response.headers.get('X-Request-ID')).to.be.a('string'); });"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "02 Readiness",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{base_url}}/health/ready",
+        "auth": {
+          "type": "noauth"
+        },
+        "description": "Prepared example; requires an implemented server and configured credentials. Contains no real secret."
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200', function () { pm.response.to.have.status(200); });",
+              "pm.test('Correlation header', function () { pm.expect(pm.response.headers.get('X-Request-ID')).to.be.a('string'); });"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "03 Login",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{base_url}}/v1/auth",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"username\": \"{{username}}\",\n  \"password\": \"{{password}}\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "auth": {
+          "type": "noauth"
+        },
+        "description": "Prepared example; requires an implemented server and configured credentials. Contains no real secret."
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200', function () { pm.response.to.have.status(200); });",
+              "pm.test('Correlation header', function () { pm.expect(pm.response.headers.get('X-Request-ID')).to.be.a('string'); });",
+              "if (pm.response.code === 200) { const data = pm.response.json(); pm.collectionVariables.set('access_token', data.access_token); }"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "04 First chat",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{base_url}}/v1/ai/chat",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"message\": \"Hãy nhớ mã tham chiếu là BLUE-17.\",\n  \"route\": \"standard\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "description": "Prepared example; requires an implemented server and configured credentials. Contains no real secret."
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200', function () { pm.response.to.have.status(200); });",
+              "pm.test('Correlation header', function () { pm.expect(pm.response.headers.get('X-Request-ID')).to.be.a('string'); });",
+              "if (pm.response.code === 200) { const data = pm.response.json(); pm.collectionVariables.set('conversation_id', data.conversation_id); pm.test('Reply and usage', function () { pm.expect(data.reply).to.be.a('string'); pm.expect(data.usage).to.have.property('complete'); }); }"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "05 Follow-up chat",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{base_url}}/v1/ai/chat",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"conversation_id\": \"{{conversation_id}}\",\n  \"message\": \"Mã tham chiếu tôi vừa đưa là gì?\",\n  \"route\": \"standard\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "description": "Prepared example; requires an implemented server and configured credentials. Contains no real secret."
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200', function () { pm.response.to.have.status(200); });",
+              "pm.test('Correlation header', function () { pm.expect(pm.response.headers.get('X-Request-ID')).to.be.a('string'); });"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "06 Analyze support ticket",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{base_url}}/v1/ai/analyze",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"text\": \"Tôi đã thanh toán nhưng tài khoản vẫn chưa được kích hoạt. Nhờ hỗ trợ kiểm tra.\",\n  \"route\": \"standard\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "description": "Prepared example; requires an implemented server and configured credentials. Contains no real secret."
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200', function () { pm.response.to.have.status(200); });",
+              "pm.test('Correlation header', function () { pm.expect(pm.response.headers.get('X-Request-ID')).to.be.a('string'); });",
+              "if (pm.response.code === 200) { const data = pm.response.json(); pm.test('Schema version and required fields', function () { pm.expect(data.schema_version).to.equal('1'); pm.expect(data.analysis).to.include.all.keys('summary', 'category', 'priority', 'sentiment', 'requires_human', 'suggested_reply'); if (['billing', 'account'].includes(data.analysis.category)) pm.expect(data.analysis.requires_human).to.equal(true); }); }"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "07 List conversations",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{base_url}}/v1/conversations?limit=20&offset=0",
+        "description": "Prepared example; requires an implemented server and configured credentials. Contains no real secret."
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200', function () { pm.response.to.have.status(200); });",
+              "pm.test('Correlation header', function () { pm.expect(pm.response.headers.get('X-Request-ID')).to.be.a('string'); });"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "08 Read saved messages",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{base_url}}/v1/conversations/{{conversation_id}}?limit=20&offset=0",
+        "description": "Prepared example; requires an implemented server and configured credentials. Contains no real secret."
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200', function () { pm.response.to.have.status(200); });",
+              "pm.test('Correlation header', function () { pm.expect(pm.response.headers.get('X-Request-ID')).to.be.a('string'); });"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "09 Usage",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{base_url}}/v1/usage",
+        "description": "Prepared example; requires an implemented server and configured credentials. Contains no real secret."
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200', function () { pm.response.to.have.status(200); });",
+              "pm.test('Correlation header', function () { pm.expect(pm.response.headers.get('X-Request-ID')).to.be.a('string'); });",
+              "if (pm.response.code === 200) { pm.test('Usage fields', function () { const data = pm.response.json(); pm.expect(data).to.include.all.keys('requests','tokens','average_latency_ms','error_rate','token_usage_complete','provider_attempts'); }); }"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "10 Missing-token request",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{base_url}}/v1/ai/chat",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"message\": \"This call must be rejected before provider dispatch.\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "auth": {
+          "type": "noauth"
+        },
+        "description": "Prepared example; requires an implemented server and configured credentials. Contains no real secret."
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 401', function () { pm.response.to.have.status(401); });",
+              "pm.test('Correlation header', function () { pm.expect(pm.response.headers.get('X-Request-ID')).to.be.a('string'); });"
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

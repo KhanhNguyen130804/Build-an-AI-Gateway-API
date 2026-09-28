@@ -1,0 +1,11 @@
+{
+  "checked_at_utc": "2026-09-28T10:10:28Z",
+  "imports": "PASS",
+  "configuration": "PASS",
+  "provider_structured_output": "PASS",
+  "actual_model": "gpt-6-luna",
+  "provider_request_id": "req_a252b6d6f6b9497facab130aa0174919",
+  "input_tokens": 43,
+  "output_tokens": 12,
+  "scope": "One real provider probe; no gateway business endpoint or ledger verification"
+}

@@ -1,0 +1,11 @@
+{
+  "checked_at_utc": "2026-09-28T10:08:31Z",
+  "imports": "PASS",
+  "configuration": "PASS",
+  "database_select_1": "PASS",
+  "provider": "NOT_CONFIGURED",
+  "openai_api_key_present": true,
+  "openai_model_present": false,
+  "provider_inference_dispatched": false,
+  "database_objects_modified": false
+}
