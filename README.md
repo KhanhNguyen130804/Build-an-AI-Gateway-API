@@ -37,7 +37,7 @@ Start with [PHASE_TASKS.md](PHASE_TASKS.md) for the current project assessment a
 Not available yet. Fill only after successful verification:
 
 - Live API/docs: `[TODO_DEPLOY_URL]`
-- Source repository: `[TODO_REPOSITORY_URL]`
+- Source repository: [Build an AI Gateway API](https://github.com/KhanhNguyen130804/Build-an-AI-Gateway-API)
 - Demo video, under five minutes: `[TODO_VIDEO_URL]`
 - Verification evidence: `[TODO_EVIDENCE_PATH]`
 

@@ -58,6 +58,12 @@ This is an evidence log, not a list of planned accomplishments. Status labels: P
 
 **VERIFIED:** `python scripts/preflight.py --provider` exited0. Imports/configuration PASS; a real Responses API call returned the validated structured object with `ok=true`. Returned model was `gpt-6-luna`, input43/output12 tokens, request ID recorded in [evidence](artifacts/evidence/provider-20260928.json). The configured model was not changed by the assistant. This verifies provider access for this probe, not gateway endpoints, ledger, retries or deployment. Earlier NOT_CONFIGURED results remain historical evidence.
 
+## Session 006 — GitHub publication and Vercel setup, 28/09/2026
+
+**Actual request:** complete Phase01 before Phase02; user supplied the GitHub repository URL.
+
+**VERIFIED:** remote repository had no refs. Staged51 files, scanned staged diff against configured secret values and checked `.env`/venv exclusion: PASS. Re-ran20 tests and Ruff: PASS. Created initial commit `24bcec4` and pushed branch `main` to the supplied GitHub repository without force. Local commit used a generic project author for the challenge. Installed/invoked Vercel CLI60.1.3 through npx; account/deployment still being checked. Browser automation failed to initialize (sandbox helper error); no browser account actions were performed. Secret values were not printed or pushed. Vercel actual deployment remains pending; Phase02 not started.
+
 ## Development session template
 
 Copy this section for each real session:

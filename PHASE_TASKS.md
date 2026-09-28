@@ -78,7 +78,7 @@ Thứ tự chính: **01 → 02 → 03 → 04 → 05/06 → 07/08 → 09 → 10 �
 | I02 | Dịch vụ LLM đang có, key cấu hình riêng, credit/quyền model | Chọn OpenAI; chưa tạo key, chưa xác minh model/credit | Chưa chạy preflight và adapter thật |
 | I03 | PostgreSQL local/managed và thông tin kết nối riêng | Chọn Supabase; project/connection chưa xác minh | Chưa migrate và test persistence |
 | I04 | Nơi deploy có thể dùng và ngân sách cho host/provider | Chọn Vercel; chưa deploy, budget chưa xác minh | Chưa provisioning/release API online |
-| I05 | Tài khoản/remote GitHub và quyền reviewer truy cập | Chưa xác minh | Chưa push/link source, cần lưu ý ẩn danh |
+| I05 | Tài khoản/remote GitHub và quyền reviewer truy cập | Repo người dùng đã cung cấp; main đã push, commit24bcec4 | Quyền reviewer truy cập cần kiểm tra trước nộp; lưu ý ẩn danh |
 | I06 | Hạn mức demo phù hợp budget và reviewer | Có default trong `.env.example`, chưa chốt | Có thể quá thấp để review hoặc quá cao cho budget |
 
 Nếu I02–I04 chưa có, vẫn có thể dựng runtime, skeleton, schema/model, error foundation và fake adapter cho test. Ghi rõ call thật/deploy đang cần đầu vào; chưa nghiệm thu các phase phụ thuộc. Không gửi giá trị key/password vào tài liệu này.
@@ -313,7 +313,7 @@ Các mốc là đích điều phối, chưa phải lịch cá nhân đã xác nh
 3. Phase02: ORM sáu bảng trong schema nội bộ `gateway`, Alembic, seed, readiness; kiểm tra grants/exposure của Supabase. Chuẩn bị code độc lập được khi chưa có DB, nhưng migration/persistence chưa nghiệm thu.
 4. Thử deploy skeleton Vercel sớm; sau DB thực hiện auth và vertical slice gọi thật/lưu ledger.
 
-P01.01–P01.07 đã hoàn thành. P01.08 còn build/deploy Vercel thật; chưa có Git remote hoặc Vercel project được liên kết. Người dùng yêu cầu chỉ chuyển Phase02 khi Phase01 hoàn thành100%, nên chưa bắt đầu Phase02 theo điều kiện hiện tại.
+P01.01–P01.07 đã hoàn thành. Source đã push GitHub main (24bcec4). P01.08 còn build/deploy Vercel thật và health/docs URL online. Người dùng yêu cầu chỉ chuyển Phase02 khi Phase01 hoàn thành100%, nên chưa bắt đầu Phase02 theo điều kiện hiện tại.
 
 ## 22. Nhật ký nghiệm thu phase — điền khi thực hiện
 
