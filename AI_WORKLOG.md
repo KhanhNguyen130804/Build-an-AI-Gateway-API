@@ -88,6 +88,18 @@ This is an evidence log, not a list of planned accomplishments. Status labels: P
 
 **Actual request:** “ghi lai toan bo thong tin thay đoi trong pharse 2”. Compared commit25e67c3, source and recorded evidence; created [Vietnamese full changelog](docs/PHASE02_CHANGELOG.md), covering all26 implementation files, database/config changes, private non-Git changes, actual bugs/corrections, verification and remaining limits. No application code, database objects or credentials changed in this documentation session; no new live test or inference claimed.
 
+## Session 010 — Phase03 authentication and guide refresh, 28/09/2026
+
+**Actual user request:** “cap nhat huog dan , sau do thuc hien pharse 3”.
+
+**Documentation updated first:** corrected the local/cloud readiness distinction, migration/seed commands, Phase02/03 status, and the API contract. Added [Phase03 auth guide](docs/PHASE03_AUTH.md); updated README, phase checklist, plan, deployment/getting-started guides, verification and submission copy. Regenerated the design OpenAPI and Postman collection for `/v1/auth/me` and the `GatewayBearer` scheme.
+
+**Implementation:** added JSON login for seeded active users; Argon2id verification with dummy verification for unknown usernames; HS256 JWT creation/validation with required `sub`, `iat`, `exp`, `iss`, `aud`; active-user bearer dependency; Swagger-visible `GET /v1/auth/me`; and owner-filtered conversation lookup returning the same 404 for missing/foreign resources. Seed password length is now constrained to 16–256 characters to match the login schema. No DB migration was needed.
+
+**Verification performed:** `python -m pytest -q` —35 passed; Ruff —PASS; planning artifact generator —9 API operations and11 Postman examples checked. `scripts/verify_auth.py` —PASS against the real seeded Supabase account for login, JWT identity, wrong password, and missing-token rejection. This probe made read-only DB queries, wrote no application rows, called no LLM, and stored sanitized evidence at [phase03.json](artifacts/evidence/phase03.json). No credential or bearer token was printed.
+
+**Limits:** Phase03 source is local and has not been deployed to Vercel. The unit tests use an in-process fake session; the read-only smoke verifies one real seeded account. Conversation endpoints and full cross-user API integration, IP login limiter, token revocation/refresh, and business APIs remain future work.
+
 ## Development session template
 
 Copy this section for each real session:

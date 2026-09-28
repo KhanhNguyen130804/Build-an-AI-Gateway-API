@@ -17,6 +17,7 @@ const route = { type: 'string', enum: ['standard'], default: 'standard' };
 const schemas = {
   AuthInput: object({ username: text(100), password: { type: 'string', minLength: 1, maxLength: 256 } }),
   AuthResult: object({ access_token: text(), token_type: { type: 'string', enum: ['bearer'] }, expires_in: { type: 'integer', minimum: 1 } }),
+  AuthenticatedUser: object({ id: uuid, username: text(100) }),
   ChatInput: object({ message: text(4000), conversation_id: { ...uuid, nullable: true }, route }, ['message']),
   AnalyzeInput: object({ text: text(8000), route }, ['text']),
   OperationUsage: object({ input_tokens: { ...integer, nullable: true }, output_tokens: { ...integer, nullable: true }, complete: { type: 'boolean' } }),
@@ -75,13 +76,14 @@ const spec = {
   openapi: '3.0.3',
   info: {
     title: 'AI Gateway — planned contract', version: '0.1.0-design',
-    description: 'PREPARATION ONLY. No server is implemented. Runtime FastAPI OpenAPI may use a newer specification version; reconcile semantic schemas before release. Metrics count logical requests separately from attempts and label unknown token metadata.',
+    description: 'Mixed implementation/design contract. Phase03 login and current-user endpoints are implemented; AI, conversation, and usage operations remain planned. Runtime FastAPI OpenAPI is authoritative for implemented routes. Metrics count logical requests separately from attempts and label unknown token metadata.',
   },
-  servers: [{ url: 'http://127.0.0.1:8000', description: 'Planned local server; not running yet.' }],
-  security: [{ bearerAuth: [] }],
+  servers: [{ url: 'http://127.0.0.1:8000', description: 'Local development server.' }],
+  security: [{ GatewayBearer: [] }],
   tags: ['Auth', 'AI', 'Conversations', 'Usage', 'Health'].map((name) => ({ name })),
   paths: {
     '/v1/auth': { post: op('login', 'Auth', 'Login a seeded user with JSON credentials.', 'AuthResult', 'AuthInput', [401, 413, 422, 429, 500, 503], [], true) },
+    '/v1/auth/me': { get: op('getCurrentUser', 'Auth', 'Return the identity associated with the bearer token.', 'AuthenticatedUser', null, [401, 500, 503]) },
     '/v1/ai/chat': { post: op('chat', 'AI', 'Chat using bounded server-owned conversation context.', 'ChatResult', 'ChatInput', [401, 404, 409, 413, 422, 429, 500, 502, 503, 504]) },
     '/v1/ai/analyze': { post: op('analyze', 'AI', 'Analyze a support ticket with structured schema v1.', 'AnalyzeResult', 'AnalyzeInput', [401, 413, 422, 429, 500, 502, 503, 504]) },
     '/v1/conversations': { get: op('listConversations', 'Conversations', 'List conversations owned by the current user.', 'ConversationPage', null, [401, 422, 500, 503], pageParams) },
@@ -93,7 +95,7 @@ const spec = {
     '/health/live': { get: op('liveness', 'Health', 'Process liveness; no paid provider call.', 'Health', null, [500], [], true) },
     '/health/ready': { get: op('readiness', 'Health', 'Bounded database readiness check.', 'Health', null, [503], [], true) },
   },
-  components: { securitySchemes: { bearerAuth: { type: 'http', scheme: 'bearer', bearerFormat: 'JWT' } }, schemas },
+  components: { securitySchemes: { GatewayBearer: { type: 'http', scheme: 'bearer', bearerFormat: 'JWT' } }, schemas },
 };
 
 const cases = [
@@ -120,7 +122,7 @@ const item = (name, method, endpoint, body, tests, noAuth = false) => ({
   event: [{ listen: 'test', script: { type: 'text/javascript', exec: tests } }],
 });
 const collection = {
-  info: { name: 'AI Gateway — prepared examples', schema: 'https://schema.getpostman.com/json/collection/v2.1.0/collection.json', description: 'DESIGN ONLY; not run against a server. Set base_url/username/password privately. Run in order to capture token and conversation_id. Export with secret and session variables cleared. Tests are smoke assertions, not the complete acceptance suite.' },
+  info: { name: 'AI Gateway — prepared examples', schema: 'https://schema.getpostman.com/json/collection/v2.1.0/collection.json', description: 'Phase03 login and current-user endpoints are implemented; AI, conversation, and usage examples remain planned and the collection has not been run against a server. Set base_url/username/password privately. Run in order to capture token and conversation_id. Export with secret and session variables cleared. Tests are smoke assertions, not the complete acceptance suite.' },
   auth: { type: 'bearer', bearer: [{ key: 'token', value: '{{access_token}}', type: 'string' }] },
   variable: [
     ['base_url', 'http://127.0.0.1:8000'], ['username', 'reviewer'], ['password', ''],
@@ -132,19 +134,22 @@ const collection = {
     item('03 Login', 'POST', '/v1/auth', { username: '{{username}}', password: '{{password}}' }, statusTest(200, [
       "if (pm.response.code === 200) { const data = pm.response.json(); pm.collectionVariables.set('access_token', data.access_token); }",
     ]), true),
-    item('04 First chat', 'POST', '/v1/ai/chat', { message: 'Hãy nhớ mã tham chiếu là BLUE-17.', route: 'standard' }, statusTest(200, [
+    item('04 Current user', 'GET', '/v1/auth/me', null, statusTest(200, [
+      "if (pm.response.code === 200) { pm.test('Authenticated identity', function () { pm.expect(pm.response.json().username).to.equal(pm.collectionVariables.get('username')); }); }",
+    ])),
+    item('05 First chat', 'POST', '/v1/ai/chat', { message: 'Hãy nhớ mã tham chiếu là BLUE-17.', route: 'standard' }, statusTest(200, [
       "if (pm.response.code === 200) { const data = pm.response.json(); pm.collectionVariables.set('conversation_id', data.conversation_id); pm.test('Reply and usage', function () { pm.expect(data.reply).to.be.a('string'); pm.expect(data.usage).to.have.property('complete'); }); }",
     ])),
-    item('05 Follow-up chat', 'POST', '/v1/ai/chat', { conversation_id: '{{conversation_id}}', message: 'Mã tham chiếu tôi vừa đưa là gì?', route: 'standard' }, statusTest(200)),
-    item('06 Analyze support ticket', 'POST', '/v1/ai/analyze', { text: cases[0].text, route: 'standard' }, statusTest(200, [
+    item('06 Follow-up chat', 'POST', '/v1/ai/chat', { conversation_id: '{{conversation_id}}', message: 'Mã tham chiếu tôi vừa đưa là gì?', route: 'standard' }, statusTest(200)),
+    item('07 Analyze support ticket', 'POST', '/v1/ai/analyze', { text: cases[0].text, route: 'standard' }, statusTest(200, [
       "if (pm.response.code === 200) { const data = pm.response.json(); pm.test('Schema version and required fields', function () { pm.expect(data.schema_version).to.equal('1'); pm.expect(data.analysis).to.include.all.keys('summary', 'category', 'priority', 'sentiment', 'requires_human', 'suggested_reply'); if (['billing', 'account'].includes(data.analysis.category)) pm.expect(data.analysis.requires_human).to.equal(true); }); }",
     ])),
-    item('07 List conversations', 'GET', '/v1/conversations?limit=20&offset=0', null, statusTest(200)),
-    item('08 Read saved messages', 'GET', '/v1/conversations/{{conversation_id}}?limit=20&offset=0', null, statusTest(200)),
-    item('09 Usage', 'GET', '/v1/usage', null, statusTest(200, [
+    item('08 List conversations', 'GET', '/v1/conversations?limit=20&offset=0', null, statusTest(200)),
+    item('09 Read saved messages', 'GET', '/v1/conversations/{{conversation_id}}?limit=20&offset=0', null, statusTest(200)),
+    item('10 Usage', 'GET', '/v1/usage', null, statusTest(200, [
       "if (pm.response.code === 200) { pm.test('Usage fields', function () { const data = pm.response.json(); pm.expect(data).to.include.all.keys('requests','tokens','average_latency_ms','error_rate','token_usage_complete','provider_attempts'); }); }",
     ])),
-    item('10 Missing-token request', 'POST', '/v1/ai/chat', { message: 'This call must be rejected before provider dispatch.' }, statusTest(401), true),
+    item('11 Missing-token request', 'POST', '/v1/ai/chat', { message: 'This call must be rejected before provider dispatch.' }, statusTest(401), true),
   ],
 };
 

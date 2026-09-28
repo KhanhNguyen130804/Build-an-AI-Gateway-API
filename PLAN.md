@@ -1,6 +1,6 @@
 # Kế hoạch triển khai AI Gateway
 
-Kế hoạch gốc:28/09/2026. Cập nhật: Phase01 và Phase02 nghiệm thu;22 tests local và kiểm tra Supabase/migration/seed/constraints/restart PASS. OpenAI live probe PASS; Vercel đang chạy skeleton Phase01. Business APIs, cloud DB integration và full release chưa hoàn thành. Xem PHASE_TASKS.md cho trạng thái từng mục.
+Kế hoạch gốc:28/09/2026. Cập nhật: Phase01–03 đã nghiệm thu local;35 pytest tests và Ruff PASS. Supabase migration/seed/constraints/restart cùng OpenAI probe có evidence lịch sử. Vercel vẫn chạy skeleton Phase01; cloud DB/auth credentials, AI business APIs và full release chưa hoàn thành. Xem PHASE_TASKS.md cho trạng thái từng mục.
 
 ## 1. Mục tiêu và thời gian
 
@@ -23,7 +23,7 @@ Ngân sách dự kiến **26 giờ thực hiện + 4 giờ dự phòng**. Đây 
 | Người dùng | Seed tài khoản demo/reviewer; không public signup | Password từ secret khi seed; hạn mức chống lạm dụng |
 | Budget | Hạn mức user/ngày và gateway/ngày, output cap | Giá trị cuối phụ thuộc ngân sách người dùng |
 
-Preflight cập nhật: `.venv` Python3.12.14 đã tạo; runtime/dev dependencies đã pin, Git repo đã init, private `.env` có JWT/hash secrets ngẫu nhiên. Local health/docs và20 foundation tests pass. Docker chưa có trong PATH, DB/key/model chưa cấu hình hoặc probe thật. Người dùng có tài khoản OpenAI nhưng chưa tạo key, chọn Supabase/Vercel và chưa dùng hai dịch vụ này. Chưa có commit/remote/push hay deploy.
+Trạng thái môi trường hiện tại: Python3.12.14 và dependency lockfiles đã có; Supabase migration/seed/readiness/constraints/restart được kiểm tra thật; OpenAI structured-output probe PASS; 35 local tests và Ruff PASS trong lượt Phase03. GitHub `main` đã push. Vercel đang phục vụ skeleton Phase01 bằng CLI, chưa có cloud DB/provider credentials và Git auto-deploy chưa nối. Auth có ở local; LLM/business APIs chưa được tích hợp. Chi tiết từng phase nằm trong [PHASE_TASKS.md](PHASE_TASKS.md); các ghi nhận ban đầu được giữ trong AI_WORKLOG theo đúng thời điểm.
 
 ## 3. Phạm vi P0 bắt buộc
 

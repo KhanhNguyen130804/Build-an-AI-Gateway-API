@@ -1,6 +1,6 @@
 # Hồ sơ nộp bài và demo
 
-**Draft trước implementation.** Không dùng bản này để khẳng định sản phẩm đã chạy. Các placeholder và claims phải sửa theo evidence thật trước khi nộp. Nội dung challenge/screenshot là yêu cầu bài thi được người dùng cung cấp; việc chuẩn bị hồ sơ không tự động bao gồm gửi form hoặc chia sẻ ra ngoài.
+**Draft; cập nhật sau Phase03 local.** Chỉ khẳng định phần có evidence: local authentication đã triển khai, còn AI business endpoints và cloud release chưa xong. Các placeholder và claims phải sửa theo evidence mới trước khi nộp. Nội dung challenge/screenshot là yêu cầu bài thi được người dùng cung cấp; việc chuẩn bị hồ sơ không tự động bao gồm gửi form hoặc chia sẻ ra ngoài.
 
 ## Danh sách deliverable
 
@@ -69,18 +69,19 @@ Chuẩn bị kiến trúc, schema, hợp đồng API, ca kiểm thử, deploymen
 Stack chốt sau trao đổi: Python + FastAPI.
 ```
 
-Thêm prompt implementation/review khi chúng thực sự được dùng; P01–P05 hiện mới chuẩn bị.
+Ghi prompt thực đã dùng trong từng phiên vào [AI_WORKLOG.md](../AI_WORKLOG.md). Các prompt mẫu P01–P05 vẫn là tài liệu chuẩn bị cho tới khi được thực thi nguyên văn.
 
 ### Process description — bản trung thực cho giai đoạn hiện tại
 
 ```text
-Tôi cung cấp đề bài cho Codex để phân tích yêu cầu và chuẩn bị kế hoạch triển khai.
-Sau khi so sánh FastAPI và NestJS, tôi chọn Python + FastAPI. Codex hỗ trợ thiết kế
-kiến trúc, database, API và các ca kiểm chứng, đồng thời đối chiếu tài liệu chính thức.
-Giai đoạn hiện tại mới hoàn thành bộ chuẩn bị; sản phẩm chưa được triển khai.
+Tôi cung cấp đề bài cho Codex, chọn Python + FastAPI, rồi triển khai từng phần có kiểm chứng.
+Đến Phase03, gateway có schema PostgreSQL/migration/seed và local login bằng Argon2id cùng
+JWT bearer. Tôi kiểm tra 35 ca local và probe auth read-only với tài khoản seed thật; DB/OpenAI
+checks trước đó có evidence riêng.
+Vercel vẫn chạy skeleton Phase01; chat, phân tích ticket, usage và release cuối còn phải làm.
 ```
 
-Trước nộp, thay đoạn cuối bằng các bước và kết quả implementation/test/deploy thực tế. Mẫu dự kiến sau hoàn thành, **chỉ dùng khi đúng**:
+Trước nộp, cập nhật đoạn này bằng kết quả implementation/test/deploy mới nhất. Mẫu đầy đủ dưới đây chỉ dùng khi mọi phần ghi trong đó đã được thực hiện:
 
 ```text
 Tôi dùng Codex để phân tích yêu cầu, thiết kế và triển khai từng luồng nhỏ của gateway.

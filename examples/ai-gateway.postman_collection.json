@@ -2,7 +2,7 @@
   "info": {
     "name": "AI Gateway — prepared examples",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-    "description": "DESIGN ONLY; not run against a server. Set base_url/username/password privately. Run in order to capture token and conversation_id. Export with secret and session variables cleared. Tests are smoke assertions, not the complete acceptance suite."
+    "description": "Phase03 login and current-user endpoints are implemented; AI, conversation, and usage examples remain planned and the collection has not been run against a server. Set base_url/username/password privately. Run in order to capture token and conversation_id. Export with secret and session variables cleared. Tests are smoke assertions, not the complete acceptance suite."
   },
   "auth": {
     "type": "bearer",
@@ -130,7 +130,29 @@
       ]
     },
     {
-      "name": "04 First chat",
+      "name": "04 Current user",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{base_url}}/v1/auth/me",
+        "description": "Prepared example; requires an implemented server and configured credentials. Contains no real secret."
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200', function () { pm.response.to.have.status(200); });",
+              "pm.test('Correlation header', function () { pm.expect(pm.response.headers.get('X-Request-ID')).to.be.a('string'); });",
+              "if (pm.response.code === 200) { pm.test('Authenticated identity', function () { pm.expect(pm.response.json().username).to.equal(pm.collectionVariables.get('username')); }); }"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "05 First chat",
       "request": {
         "method": "POST",
         "header": [
@@ -166,7 +188,7 @@
       ]
     },
     {
-      "name": "05 Follow-up chat",
+      "name": "06 Follow-up chat",
       "request": {
         "method": "POST",
         "header": [
@@ -201,7 +223,7 @@
       ]
     },
     {
-      "name": "06 Analyze support ticket",
+      "name": "07 Analyze support ticket",
       "request": {
         "method": "POST",
         "header": [
@@ -237,7 +259,7 @@
       ]
     },
     {
-      "name": "07 List conversations",
+      "name": "08 List conversations",
       "request": {
         "method": "GET",
         "header": [],
@@ -258,7 +280,7 @@
       ]
     },
     {
-      "name": "08 Read saved messages",
+      "name": "09 Read saved messages",
       "request": {
         "method": "GET",
         "header": [],
@@ -279,7 +301,7 @@
       ]
     },
     {
-      "name": "09 Usage",
+      "name": "10 Usage",
       "request": {
         "method": "GET",
         "header": [],
@@ -301,7 +323,7 @@
       ]
     },
     {
-      "name": "10 Missing-token request",
+      "name": "11 Missing-token request",
       "request": {
         "method": "POST",
         "header": [

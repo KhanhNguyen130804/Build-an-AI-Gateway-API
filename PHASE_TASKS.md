@@ -1,6 +1,6 @@
 # AI Gateway — công việc triển khai theo phase
 
-**Cập nhật trạng thái: sau triển khai Phase01 local ngày 28/09/2026, Asia/Saigon (UTC+7).**
+**Cập nhật trạng thái: Phase01–03 đã nghiệm thu local ngày 28/09/2026, Asia/Saigon (UTC+7). Phase04 là bước tiếp theo.**
 
 Đây là checklist thực hiện dựa trên kiểm tra workspace hiện tại. Stack người dùng đã chọn: **Python + FastAPI + PostgreSQL**. Mục tiêu là API chạy thật, đủ yêu cầu bắt buộc và có hồ sơ kiểm chứng để nộp challenge.
 
@@ -8,28 +8,18 @@ Hạn theo đề bài: **23:59 ngày 01/10/2026**; mốc nộp nội bộ: **21:
 
 ## 1. Đánh giá hiện trạng
 
-| Thành phần | Trạng thái đã kiểm tra | Ý nghĩa / việc còn thiếu |
+| Thành phần | Trạng thái hiện tại | Việc còn thiếu |
 |---|---|---|
-| Stack | Đã chọn Python + FastAPI | Không cần quyết định lại framework |
-| Kế hoạch | Có [PLAN.md](PLAN.md) | Phạm vi/backlog đã chuẩn bị; chưa thực hiện |
-| Kiến trúc | Có [ARCHITECTURE.md](docs/ARCHITECTURE.md) | Có thiết kế auth, ledger, deadline, retry, persistence |
-| Database | Có [DATABASE.md](docs/DATABASE.md), [schema.sql](db/schema.sql) với 6 bảng | SQL thiết kế chưa chạy; chưa có model ORM/Alembic |
-| API | Có [API.md](docs/API.md), [openapi.json](docs/openapi.json) | 8 operation thiết kế; chưa có router/server |
-| Ví dụ | Có [Postman collection](examples/ai-gateway.postman_collection.json), [tickets.json](examples/tickets.json) | 10 request mẫu; chưa chạy với API thật |
-| Kiểm thử | Có [VERIFICATION.md](docs/VERIFICATION.md) | 24 ca nghiệm thu đã mô tả; chưa có test code hoặc kết quả runtime |
-| Config | Có [.env.example](.env.example), chưa có `.env` | Key/model/DB/JWT secret chưa được cấu hình trong dự án |
-| Python | Có Python 3.12.14 đi kèm Codex qua đường dẫn tuyệt đối; chưa thấy `python`/`py` trong PATH | Chưa có runtime/virtual environment riêng cho dự án |
-| Git | Có executable; chưa có `.git` tại workspace | Chưa init, commit, remote hoặc push từ dự án này |
-| Backend | Chưa có `app/`, dependency files hoặc entrypoint | Chưa có tính năng backend được triển khai |
-| Migration/test/build | Chưa có `migrations/`, `alembic.ini`, `tests/`, `Dockerfile` | Cần tạo và chạy thật |
-| PostgreSQL | Chưa có kết nối được kiểm tra | Không suy ra đã có DB chỉ vì có schema.sql |
-| LLM | Chưa có call thật từ dự án | Quyền truy cập model, credit, structured output chưa xác minh |
-| Deploy/demo | Chưa có URL API, GitHub repo được ghi nhận hoặc video | Các deliverable sản phẩm còn thiếu |
-| AI worklog | Có [AI_WORKLOG.md](AI_WORKLOG.md) | Đã ghi công việc chuẩn bị; cần cập nhật từng phiên thực hiện |
+| Stack | Python 3.12 + FastAPI + PostgreSQL/Supabase; OpenAI và Vercel đã chọn | Giữ nguyên các quyết định đã chốt |
+| Nền tảng API | App factory, JSON errors/logging, body limit, health endpoints, seeded-user login, JWT bearer và `GET /v1/auth/me` | LLM/business endpoints |
+| Database | Sáu bảng ORM, migration `0001_gateway`, seed Argon2id đã chạy trên Supabase | Thêm persistence logic theo từng phase; least-privilege backend role còn là hardening |
+| LLM | OpenAI structured-output probe thật PASS | Chưa có provider adapter hoặc call nghiệp vụ qua gateway |
+| Kiểm thử | 35 pytest tests + Ruff PASS trong lượt Phase03; live DB/restart evidence của Phase02 | Chưa bao phủ live cloud auth, business behavior hoặc toàn bộ T01–T24 |
+| Deployment | Vercel public skeleton Phase01; Supabase Phase02 đã kiểm tra local | Chưa release DB credentials/code Phase02 lên cloud; Git auto-deploy chưa nối |
+| Repo | `main` đã push GitHub; lockfiles, scripts và tài liệu trong repo | Tiếp tục cập nhật worklog/evidence theo từng phase |
+| Phạm vi sản phẩm | Kế hoạch P0 ở [PLAN.md](PLAN.md) | Auth → LLM/chat/analyze → reliability/limits/usage → integration/release |
 
-Kiểm tra lại shell chưa thấy tên biến key LLM/DB/deploy liên quan. Điều đó chỉ phản ánh shell hiện tại, không chứng minh người dùng chưa có tài khoản hoặc key ở nơi khác. Docker và uv chưa thấy trong PATH; Docker local không phải điều kiện bắt buộc nếu dùng PostgreSQL managed.
-
-**Cập nhật sau implementation:** bảng trên là baseline lúc16:05, trước triển khai. Hiện đã có `.venv`, Git local, dependency lockfiles, `app/`, `tests/`, private `.env`, Dockerfile và Vercel entrypoint. FastAPI local chạy được;20 foundation tests, Ruff, imports/pip check, wheel build và HTTP smoke đã PASS. Chưa có ORM/migration/auth/business endpoints. OpenAI key chưa tạo; Supabase và Vercel đã chọn nhưng chưa kết nối/deploy. Xem [evidence](artifacts/evidence/phase01.json) và [hướng dẫn cấu hình](docs/GETTING_STARTED.md).
+Các trạng thái ban đầu được giữ trong [AI_WORKLOG.md](AI_WORKLOG.md) như lịch sử, không dùng làm mô tả hiện tại. Evidence Phase01/02 ghi lại các lần kiểm chứng trước; xem [GETTING_STARTED.md](docs/GETTING_STARTED.md) và [PHASE02_DATABASE.md](docs/PHASE02_DATABASE.md) để tái lập.
 
 ## 2. Cách sử dụng và cập nhật file
 
@@ -52,7 +42,7 @@ Effort là giờ thực hiện dự kiến, không phải thời gian chờ tài
 | 00 | Kiểm tra hiện trạng, thống nhất đầu vào thiết kế | Không | Đã thực hiện kiểm tra | ĐÃ HOÀN THÀNH ĐÁNH GIÁ |
 | 01 | Môi trường, skeleton, config, health, preflight provider/host | 00 | 2.0 | ĐÃ NGHIỆM THU — 8/8 mục |
 | 02 | PostgreSQL, ORM, migration, seed | 01; DB truy cập được | 1.5 | ĐÃ NGHIỆM THU — 6/6 mục |
-| 03 | Authentication và phân quyền cơ bản | 02 | 1.5 | CHƯA BẮT ĐẦU |
+| 03 | Authentication và phân quyền cơ bản | 02 | 1.5 | ĐÃ NGHIỆM THU — 6/6 mục local |
 | 04 | Adapter LLM thật và request/attempt ledger | 01–03; model/key đã xác minh | 2.0 | CHƯA BẮT ĐẦU |
 | 05 | Chat, context và lưu hội thoại | 04 | 2.0 | CHƯA BẮT ĐẦU |
 | 06 | Structured ticket analysis | 04 | 1.5 | CHƯA BẮT ĐẦU |
@@ -75,13 +65,13 @@ Thứ tự chính: **01 → 02 → 03 → 04 → 05/06 → 07/08 → 09 → 10 �
 | ID | Đầu vào | Tình trạng | Ảnh hưởng nếu thiếu |
 |---|---|---|---|
 | I01 | Số giờ rảnh mỗi ngày đến 01/10 | Chưa được cung cấp | Chưa xác nhận kế hoạch26h có khả thi theo lịch cá nhân |
-| I02 | Dịch vụ LLM đang có, key cấu hình riêng, credit/quyền model | Chọn OpenAI; chưa tạo key, chưa xác minh model/credit | Chưa chạy preflight và adapter thật |
-| I03 | PostgreSQL local/managed và thông tin kết nối riêng | Chọn Supabase; project/connection chưa xác minh | Chưa migrate và test persistence |
-| I04 | Nơi deploy có thể dùng và ngân sách cho host/provider | Chọn Vercel; chưa deploy, budget chưa xác minh | Chưa provisioning/release API online |
-| I05 | Tài khoản/remote GitHub và quyền reviewer truy cập | Repo người dùng đã cung cấp; main đã push, commit24bcec4 | Quyền reviewer truy cập cần kiểm tra trước nộp; lưu ý ẩn danh |
+| I02 | Dịch vụ LLM đang có, key cấu hình riêng, credit/quyền model | OpenAI structured-output probe PASS; key/model giữ riêng trong `.env` | Adapter thật chưa triển khai; budget vẫn cần kiểm tra trước release |
+| I03 | PostgreSQL local/managed và thông tin kết nối riêng | Supabase migration/seed/constraints/readiness/restart đã có evidence Phase02 | Cloud API chưa trỏ tới DB; không đưa URL vào tài liệu |
+| I04 | Nơi deploy có thể dùng và ngân sách cho host/provider | Vercel skeleton đã deploy và public-smoke bằng CLI | Phase02/03 chưa deploy; budget và reviewer access cần kiểm tra |
+| I05 | Tài khoản/remote GitHub và quyền reviewer truy cập | Repo đã push lên GitHub; `main` đang có source Phase02 | Quyền reviewer truy cập cần kiểm tra trước nộp; lưu ý ẩn danh |
 | I06 | Hạn mức demo phù hợp budget và reviewer | Có default trong `.env.example`, chưa chốt | Có thể quá thấp để review hoặc quá cao cho budget |
 
-Nếu I02–I04 chưa có, vẫn có thể dựng runtime, skeleton, schema/model, error foundation và fake adapter cho test. Ghi rõ call thật/deploy đang cần đầu vào; chưa nghiệm thu các phase phụ thuộc. Không gửi giá trị key/password vào tài liệu này.
+Probe OpenAI, Supabase và skeleton Vercel đã có kết quả, nhưng provider adapter và cloud release vẫn chưa hoàn tất. Chỉ đánh dấu nghiệm thu cho phần đã chạy; không gửi giá trị key/password vào tài liệu này.
 
 ## 5. Phase 00 — đánh giá hiện trạng
 
@@ -136,14 +126,14 @@ Nếu I02–I04 chưa có, vẫn có thể dựng runtime, skeleton, schema/mode
 
 **Mục tiêu:** client xác thực và dữ liệu được cách ly theo user. **Phụ thuộc:**02. **Effort:**1.5h. **Tham khảo:** [API.md](docs/API.md).
 
-- [ ] P03.01 — Tạo `POST /v1/auth` nhận JSON username/password; lỗi đăng nhập không tiết lộ tài khoản có tồn tại hay không.
-- [ ] P03.02 — Verify password hash; sinh JWT với sub UUID, iat/exp/iss/aud và thời hạn cấu hình.
-- [ ] P03.03 — Dependency xác thực: algorithm allowlist, chữ ký/expiry/issuer/audience, user tồn tại và active.
-- [ ] P03.04 — Khai báo HTTP bearer cho Swagger; thử login rồi authorize, không giả định đây là OAuth2 server.
-- [ ] P03.05 — Tạo owner-query primitive dùng user_id từ token; resource không tồn tại hoặc ngoài quyền cùng trả404.
-- [ ] P03.06 — Kiểm tra valid/invalid/missing/expired/tampered token; định dạng lỗi và WWW-Authenticate khi áp dụng.
+- [x] P03.01 — `POST /v1/auth` nhận JSON username/password; unknown, wrong-password và inactive account có cùng lỗi.
+- [x] P03.02 — Verify Argon2id hash; sinh JWT có sub UUID, iat/exp/iss/aud và TTL cấu hình.
+- [x] P03.03 — Dependency kiểm tra HS256 allowlist, chữ ký/expiry/issuer/audience, user tồn tại và active.
+- [x] P03.04 — HTTP Bearer xuất hiện trong Swagger; thêm `GET /v1/auth/me` để kiểm tra login rồi authorize.
+- [x] P03.05 — Owner-query cho conversation lọc đồng thời resource ID và user ID; missing/foreign cùng trả404.
+- [x] P03.06 — Unit tests cho valid/invalid/missing/expired/tampered tokens và `WWW-Authenticate`.
 
-**Gate:** login200; protected call401 khi thiếu/sai token; không nhận user_id từ client để quyết định quyền. T02 phải có kết quả; T03 kiểm tra đầy đủ khi có conversation ở05. Login limiter được gắn ở08.
+**Nghiệm thu:** auth tests và Ruff PASS trong lần triển khai này; 35 pytest tests tổng cộng. [Read-only auth probe](scripts/verify_auth.py) kiểm tra user đã seed, bearer identity, sai mật khẩu và thiếu token trên DB thật; evidence ở [phase03.json](artifacts/evidence/phase03.json). Unit tests dùng fake session; conversation API cross-user integration thuộc Phase05. Login limiter được gắn ở08. Cloud Vercel vẫn chưa có Phase03.
 
 ## 9. Phase 04 — LLM adapter thật và ledger
 
@@ -310,12 +300,11 @@ Các mốc là đích điều phối, chưa phải lịch cá nhân đã xác nh
 
 ## 21. Việc bắt đầu ngay ở phiên implementation tiếp theo
 
-1. Phase03: JSON login, verify Argon2id và JWT claims/expiry/signature.
-2. Thêm bearer dependency và owner-query primitive; chạy auth/security tests.
-3. Phase04: adapter LLM thật và request/attempt ledger trước chat/analyze.
-4. Hoàn thiện cloud DB credentials/release ở phase deploy; public skeleton vẫn chưa phải sản phẩm cuối.
+1. Phase04: adapter LLM thật và request/attempt ledger trước chat/analyze.
+2. Sau khi có vertical slice, tiếp tục chat/context ở Phase05 và structured analysis ở Phase06.
+3. Hoàn thiện cloud DB credentials/release ở phase deploy; public skeleton vẫn chưa phải sản phẩm cuối.
 
-P01.01–P01.08 và P02.01–P02.06 đã nghiệm thu. Tiếp theo Phase03 authentication. Cloud credentials và full release vẫn thuộc các phase tương ứng.
+P01.01–P01.08, P02.01–P02.06 và P03.01–P03.06 đã nghiệm thu local. Cloud credentials, auth live trên deploy và full release vẫn thuộc các phase tương ứng.
 
 ## 22. Nhật ký nghiệm thu phase — điền khi thực hiện
 
@@ -324,6 +313,7 @@ P01.01–P01.08 và P02.01–P02.06 đã nghiệm thu. Tiếp theo Phase03 authe
 | 00 | P00.01–P00.04 | Workspace chưa init Git | Inventory + đọc docs + path/runtime checks | Hiện trạng ở mục1 | I01–I06 chưa xác minh đầy đủ; chưa có implementation | 28/09/2026 16:05 UTC+7 |
 | 01 | P01.01–P01.08 | GitHub main; deployed source471a653 | pytest20 PASS; Ruff/imports/pip check/wheel/HTTP PASS; Supabase/OpenAI probes PASS; Vercel build/public smoke PASS | [local](artifacts/evidence/phase01.json), [provider](artifacts/evidence/provider-20260928.json), [DB](artifacts/evidence/preflight-20260928.json), [Vercel](artifacts/evidence/vercel-phase01.json) | Không còn blocker Phase01; full integration/release và Git auto-deploy vẫn chưa thực hiện | 28/09/2026 |
 | 02 | P02.01–P02.06 | Phase02 working tree | migrate upgrade/check PASS; seed repeat PASS;14 live DB checks, hashes/app/process restart PASS;22 local tests PASS | [phase02](artifacts/evidence/phase02.json) | Cloud Phase02 chưa release; Phase03 auth chưa làm | 28/09/2026 |
-| 03–13 | Chưa có | Chưa có | NOT RUN | Chưa có | Chưa bắt đầu | — |
+| 03 | P03.01–P03.06 | Current working tree | pytest35 PASS; Ruff PASS; read-only auth smoke uses real seeded DB account; no LLM call | [tests](tests/test_auth.py), [probe](artifacts/evidence/phase03.json), [AI_WORKLOG](AI_WORKLOG.md) | Conversation endpoint cross-user integration deferred to05; cloud Phase03 not released | 28/09/2026 |
+| 04–13 | Chưa có | Chưa có | NOT RUN | Chưa có | Chưa bắt đầu | — |
 
 Tạo một dòng riêng cho từng phase khi làm; cập nhật checkbox, bảng trạng thái ở mục3 và AI_WORKLOG cùng lúc. Không dùng bảng này như bằng chứng PASS cho backend khi chỉ mới đọc tài liệu.

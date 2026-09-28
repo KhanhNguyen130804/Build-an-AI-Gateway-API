@@ -32,7 +32,7 @@ Two accounts: `reviewer` and `other-reviewer` (unless usernames were configured 
 Missing seed passwords were generated privately into `.env` as `DEMO_PASSWORD` and
 `SECOND_TEST_PASSWORD`; no plaintext or hash was printed or committed. Argon2id hashes
 are stored in PostgreSQL. Read the passwords locally when auth is implemented in Phase03.
-Passwords must have at least16 characters for this seed command.
+Passwords must contain16–256 characters for this seed command.
 
 ## Connection policy
 

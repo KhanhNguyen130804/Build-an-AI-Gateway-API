@@ -9,6 +9,7 @@ from app.db.seed import seed_users
     "overrides",
     [
         {"demo_password": "short"},
+        {"demo_password": "x" * 257},
         {"second_test_username": "reviewer"},
     ],
 )

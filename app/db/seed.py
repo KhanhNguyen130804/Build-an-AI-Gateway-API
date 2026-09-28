@@ -1,14 +1,12 @@
 """One-off idempotent seed. Existing identities and hashes are never overwritten."""
 
-from pwdlib import PasswordHash
 from sqlalchemy import select
 from sqlalchemy.dialects.postgresql import insert
 
 from app.core.config import Settings
+from app.core.passwords import password_hasher
 from app.db.models import User
 from app.db.session import Database
-
-password_hasher = PasswordHash.recommended()
 
 
 async def seed_users(database: Database, settings: Settings):
@@ -19,10 +17,13 @@ async def seed_users(database: Database, settings: Settings):
     if entries[0][0] == entries[1][0]:
         raise ValueError("Seed usernames must differ")
     if any(
-        not name or len(name) > 100 or not secret or len(secret.get_secret_value()) < 16
+        not name
+        or len(name) > 100
+        or not secret
+        or not 16 <= len(secret.get_secret_value()) <= 256
         for name, secret in entries
     ):
-        raise ValueError("Seed requires usernames and passwords of at least16 characters")
+        raise ValueError("Seed requires usernames and passwords of 16 to 256 characters")
     result = []
     async with database.sessions.begin() as session:
         for name, secret in entries:

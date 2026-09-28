@@ -3,17 +3,17 @@
   "info": {
     "title": "AI Gateway — planned contract",
     "version": "0.1.0-design",
-    "description": "PREPARATION ONLY. No server is implemented. Runtime FastAPI OpenAPI may use a newer specification version; reconcile semantic schemas before release. Metrics count logical requests separately from attempts and label unknown token metadata."
+    "description": "Mixed implementation/design contract. Phase03 login and current-user endpoints are implemented; AI, conversation, and usage operations remain planned. Runtime FastAPI OpenAPI is authoritative for implemented routes. Metrics count logical requests separately from attempts and label unknown token metadata."
   },
   "servers": [
     {
       "url": "http://127.0.0.1:8000",
-      "description": "Planned local server; not running yet."
+      "description": "Local development server."
     }
   ],
   "security": [
     {
-      "bearerAuth": []
+      "GatewayBearer": []
     }
   ],
   "tags": [
@@ -150,6 +150,106 @@
                 "schema": {
                   "type": "integer",
                   "minimum": 0
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Redacted internal failure.",
+            "headers": {
+              "X-Request-ID": {
+                "description": "Server-generated correlation UUID.",
+                "schema": {
+                  "type": "string",
+                  "format": "uuid"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Dependency unavailable, quota/configuration or persistence failure.",
+            "headers": {
+              "X-Request-ID": {
+                "description": "Server-generated correlation UUID.",
+                "schema": {
+                  "type": "string",
+                  "format": "uuid"
+                }
+              },
+              "Retry-After": {
+                "description": "When applicable, seconds until a safe retry/window reset.",
+                "schema": {
+                  "type": "integer",
+                  "minimum": 0
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/auth/me": {
+      "get": {
+        "operationId": "getCurrentUser",
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Return the identity associated with the bearer token.",
+        "responses": {
+          "200": {
+            "description": "Successful response.",
+            "headers": {
+              "X-Request-ID": {
+                "description": "Server-generated correlation UUID.",
+                "schema": {
+                  "type": "string",
+                  "format": "uuid"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthenticatedUser"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid gateway credentials.",
+            "headers": {
+              "X-Request-ID": {
+                "description": "Server-generated correlation UUID.",
+                "schema": {
+                  "type": "string",
+                  "format": "uuid"
+                }
+              },
+              "WWW-Authenticate": {
+                "schema": {
+                  "type": "string",
+                  "example": "Bearer"
                 }
               }
             },
@@ -1228,7 +1328,7 @@
   },
   "components": {
     "securitySchemes": {
-      "bearerAuth": {
+      "GatewayBearer": {
         "type": "http",
         "scheme": "bearer",
         "bearerFormat": "JWT"
@@ -1278,6 +1378,25 @@
           "access_token",
           "token_type",
           "expires_in"
+        ]
+      },
+      "AuthenticatedUser": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "username": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100
+          }
+        },
+        "required": [
+          "id",
+          "username"
         ]
       },
       "ChatInput": {

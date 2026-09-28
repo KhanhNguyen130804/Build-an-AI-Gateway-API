@@ -1,6 +1,6 @@
 # Architecture and reliability design
 
-**Design only.** Update diagrams and parameters to match verified implementation before submission.
+**Mixed status:** Phase01–03 implement the API foundation, database setup, and authentication. The chat/provider/retry/persistence sequence and reliability parameters below remain design until their phases are implemented and verified. Update diagrams to match each accepted phase before submission.
 
 ## System boundary
 

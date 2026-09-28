@@ -1,6 +1,6 @@
 # Environment and deployment runbook
 
-**Current:** Phase01 Vercel skeleton public smoke PASS at [Swagger](https://ai-gateway-challenge.vercel.app/docs); GitHub source pushed. Phase02 real Supabase migration/seed/readiness verified locally; cloud DB credentials/Phase02 release not configured. Selected path: Supabase + Vercel + OpenAI. Deploy uses Vercel CLI; Git auto-deploy connection failed and remains pending. Runtime Python3.12; Docker/uv/gh not in PATH. Earlier inventory rows below are historical Phase01 preparation; use PHASE_TASKS.md for current acceptance.
+**Current:** Phase01–03 are implemented locally; Phase02 live Supabase evidence and Phase03 auth tests/read-only seeded-account probe pass. Vercel still serves the Phase01 skeleton at [Swagger](https://ai-gateway-challenge.vercel.app/docs); cloud DB/JWT/provider credentials and Phase02/03 release are not configured. Selected path: Supabase + Vercel + OpenAI. Deploy uses Vercel CLI; Git auto-deploy connection failed and remains pending. Runtime Python3.12; Docker/uv/gh not in PATH. Earlier inventory rows below are historical Phase01 preparation; use PHASE_TASKS.md for current acceptance.
 
 ## Readiness inventory
 
@@ -19,9 +19,9 @@
 
 Do not equate “no env var in this shell” with “no account/key exists.” Do not install a large toolchain just to proceed with planning.
 
-## Project commands
+## Local project commands
 
-Install/start commands now exist and are verified locally. Migration/seed commands below remain future Phase02 deliverables; do not execute until created. Preserve existing `.env` rather than overwriting it.
+The local Python 3.12 environment, PostgreSQL migration/seed scripts, and app runner exist. Preserve an existing `.env`; `scripts/bootstrap_env.py` only creates it when absent. The commands below access the configured database for migration, seed, and live verification, so run them intentionally from the repository root.
 
 ```powershell
 # Run a chosen project Python executable, then activate the project environment.
@@ -29,13 +29,18 @@ python -m venv .venv
 .\.venv\Scripts\Activate.ps1
 python -m pip install -r requirements-dev.txt
 python scripts/bootstrap_env.py
-# Configure .env privately, then:
-alembic upgrade head
-python -m app.scripts.seed_demo
+# Configure .env privately, then apply the migration and seed accounts once:
+python scripts/migrate.py upgrade
+python scripts/seed.py
+# Verify DB constraints/readiness and process persistence when appropriate:
+python scripts/verify_database.py
+python scripts/verify_restart.py
+python scripts/verify_auth.py
+# Start the API:
 python -m app
 ```
 
-If Python is not on PATH, use the verified project executable with PowerShell's call operator `&`. Avoid weakening machine-wide execution policy merely to activate a venv; executing `.venv\Scripts\python.exe` directly is an alternative. Lock dependencies after installation and run clean-checkout verification with the same Python version. Linux deploy must verify wheels for psycopg and Argon2, not just Windows imports.
+If Python is not on PATH, use the verified project executable with PowerShell's call operator `&`. Avoid weakening machine-wide execution policy merely to activate a venv; executing `.venv\Scripts\python.exe` directly is an alternative. `scripts/migrate.py check` checks Alembic drift and `scripts/migrate.py current` reports the applied revision. Linux deploy must verify wheels for psycopg and Argon2, not just Windows imports.
 
 Expected quality commands after files exist: `python -m pytest`, migration on a clean test DB, explicit live smoke test. Choose a minimal dependency lock approach and document it; do not generate an untested version list in the plan.
 

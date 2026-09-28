@@ -7,6 +7,7 @@ from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 from sqlalchemy.pool import NullPool
 
 from app.core.config import Settings
+from app.core.errors import GatewayError
 
 REVISION = "0001_gateway"
 
@@ -57,5 +58,8 @@ class Database:
 
 
 async def get_session(request: Request):
-    async with request.app.state.database.sessions() as session:
+    database = request.app.state.database
+    if database is None:
+        raise GatewayError(503, "DATABASE_NOT_READY", "The database is not ready.")
+    async with database.sessions() as session:
         yield session
