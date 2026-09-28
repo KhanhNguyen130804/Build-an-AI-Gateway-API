@@ -3,7 +3,7 @@
   "info": {
     "title": "AI Gateway — planned contract",
     "version": "0.1.0-design",
-    "description": "Mixed implementation/design contract. Phase03 login and current-user endpoints are implemented; AI, conversation, and usage operations remain planned. Runtime FastAPI OpenAPI is authoritative for implemented routes. Metrics count logical requests separately from attempts and label unknown token metadata."
+    "description": "Mixed implementation/design contract. Phase04 implements authenticated first-turn POST /v1/ai/chat through an OpenAI Responses adapter with a request/attempt ledger. The fuller chat, conversation, and usage shapes below retain planned continuation and business operations not yet implemented. Runtime FastAPI OpenAPI is authoritative for implemented routes. Metrics count logical requests separately from attempts and label unknown token metadata."
   },
   "servers": [
     {

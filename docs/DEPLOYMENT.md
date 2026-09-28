@@ -1,6 +1,6 @@
 # Environment and deployment runbook
 
-**Current:** Phase01–03 are implemented locally; Phase02 live Supabase evidence and Phase03 auth tests/read-only seeded-account probe pass. Vercel still serves the Phase01 skeleton at [Swagger](https://ai-gateway-challenge.vercel.app/docs); cloud DB/JWT/provider credentials and Phase02/03 release are not configured. Selected path: Supabase + Vercel + OpenAI. Deploy uses Vercel CLI; Git auto-deploy connection failed and remains pending. Runtime Python3.12; Docker/uv/gh not in PATH. Earlier inventory rows below are historical Phase01 preparation; use PHASE_TASKS.md for current acceptance.
+**Local status on 29/09/2026:** Phase01–04 implemented; 50 local tests and Ruff pass, and one gateway smoke persisted a successful request/attempt in PostgreSQL after a real provider call. No deploy was performed. The latest Vercel evidence is from 28/09 and records a Phase01 skeleton; current cloud state, credentials and auto-deploy connection were not checked in this task. Selected path remains Supabase + Vercel + OpenAI. Earlier inventory rows below are historical preparation; use PHASE_TASKS.md for current acceptance.
 
 ## Readiness inventory
 

@@ -67,8 +67,7 @@ def test_liveness_and_docs_without_external_credentials(app):
         assert client.get("/docs").status_code == 200
         assert "/health/live" in client.get("/openapi.json").json()["paths"]
         assert_error(client.get("/health/ready"), 503, "DATABASE_NOT_READY")
-        # Business APIs must not silently return mocked success in Phase 01.
-        assert_error(client.post("/v1/ai/chat", json={"message": "hello"}), 404, "NOT_FOUND")
+        assert "/v1/ai/chat" in client.get("/openapi.json").json()["paths"]
 
 
 def test_database_probe_failure_and_success(app):

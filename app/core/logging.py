@@ -28,7 +28,19 @@ class JsonFormatter(logging.Formatter):
         request_id = getattr(record, "request_id", None) or request_id_context.get()
         if request_id:
             data["request_id"] = request_id
-        for key in ("method", "route", "status", "latency_ms", "error_type"):
+        for key in (
+            "method",
+            "route",
+            "status",
+            "latency_ms",
+            "error_type",
+            "operation",
+            "provider",
+            "model",
+            "attempt",
+            "error_code",
+            "provider_request_id",
+        ):
             if (value := getattr(record, key, None)) is not None:
                 data[key] = self.redact(value) if isinstance(value, str) else value
         # Never append exc_info, request bodies, headers or arbitrary record extras.

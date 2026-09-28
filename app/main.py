@@ -4,6 +4,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 
 from app import __version__
+from app.api.ai import router as ai_router
 from app.api.auth import router as auth_router
 from app.api.health import router as health_router
 from app.core.config import Settings, load_settings
@@ -30,7 +31,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         version=__version__,
         lifespan=lifespan,
         description=(
-            "Phase 03: seeded-user authentication and owner identity. AI and usage APIs follow."
+            "Authenticated first-turn AI chat with request and provider-attempt ledger."
         ),
     )
     app.state.settings = settings
@@ -40,4 +41,5 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     app.add_middleware(RequestContextMiddleware, max_body_bytes=settings.max_body_bytes)
     app.include_router(health_router)
     app.include_router(auth_router)
+    app.include_router(ai_router)
     return app

@@ -1,6 +1,6 @@
 # Bắt đầu với OpenAI, Supabase và Vercel
 
-**Cập nhật28/09/2026:** Phase01–03 đã hoàn tất local. 35 pytest tests, Ruff và read-only auth probe với seeded DB account PASS trong lần triển khai Phase03; các kiểm tra DB/OpenAI lịch sử được ghi riêng. Vercel vẫn chạy skeleton Phase01, chưa có cloud DB/LLM credentials. Local `.env` đã được cấu hình riêng. [Swagger online](https://ai-gateway-challenge.vercel.app/docs). Các bước dưới đây hướng dẫn tái lập môi trường; kết quả cũ không thay thế việc kiểm tra lại sau thay đổi.
+**Cập nhật29/09/2026:** Phase01–04 đã hoàn tất local; 50 pytest tests và Ruff PASS. Một gateway smoke local xác nhận readiness/login/chat cùng một request/attempt PostgreSQL thành công qua OpenAI; xem [AI_WORKLOG Session011](../AI_WORKLOG.md). Continuation/history/analyze/usage chưa triển khai. Evidence Vercel gần nhất (28/09) ghi skeleton Phase01; cloud chưa được kiểm tra lại trong task này. Các bước dưới đây hướng dẫn tái lập môi trường; không coi evidence cũ là trạng thái hiện tại.
 
 ## 1. Xem phần đã chạy
 
@@ -10,7 +10,7 @@ Tại workspace, dùng Python của venv, không cần activate PowerShell:
 & .\.venv\Scripts\python.exe -m app
 ```
 
-Mở [Swagger local](http://127.0.0.1:8000/docs). `/health/live` kiểm tra process; `/health/ready` trả200 khi `DATABASE_URL` truy cập được và revision `0001_gateway` đã áp dụng, nếu không trả503 an toàn. Cloud Vercel chưa có DB credentials nên readiness của bản public vẫn có thể trả503. Local runtime hiện có `POST /v1/auth` và `GET /v1/auth/me`; chat/analyze/history/usage chưa được triển khai.
+Mở [Swagger local](http://127.0.0.1:8000/docs). `/health/live` kiểm tra process; `/health/ready` trả200 khi `DATABASE_URL` truy cập được và revision `0001_gateway` đã áp dụng, nếu không trả503 an toàn. Local runtime có `POST /v1/auth`, `GET /v1/auth/me` và first-turn `POST /v1/ai/chat`; chat tạo conversation mới và ledger nhưng chưa lưu message/nhận `conversation_id`. Analyze/history/usage chưa được triển khai. Cloud state không được xác minh lại trong task này.
 
 `.env` riêng đã được tạo với JWT/hash secrets ngẫu nhiên, không đưa vào Git. `scripts/bootstrap_env.py` không ghi đè khi file đã tồn tại. Development có thể khởi động khi thiếu DB/LLM, nhưng login cần database và `JWT_SECRET`; production từ chối thiếu cấu hình bắt buộc.
 
@@ -75,7 +75,7 @@ Gateway dùng JWT của chính gateway, không mặc định là Supabase Auth. 
 
 ## 4. Chuẩn bị Vercel
 
-Đã có `app.vercel:app`, `tool.vercel.entrypoint` trong pyproject và `vercel.json` đặt function maxDuration60s. Skeleton đã được build/deploy và public-smoke bằng Vercel CLI; Git auto-deploy chưa kết nối. Bản hiện tại trên Vercel chưa gồm Phase02/03 và chưa có cloud DB/JWT/provider configuration. [FastAPI on Vercel](https://vercel.com/docs/frameworks/backend/fastapi), [Python runtime](https://vercel.com/docs/functions/runtimes/python).
+Đã có `app.vercel:app`, `tool.vercel.entrypoint` trong pyproject và `vercel.json` đặt function maxDuration60s. Evidence ngày 28/09 ghi build/deploy skeleton bằng Vercel CLI và Git auto-deploy chưa kết nối; Phase04 không deploy và cloud state hiện tại chưa được kiểm tra. [FastAPI on Vercel](https://vercel.com/docs/frameworks/backend/fastapi), [Python runtime](https://vercel.com/docs/functions/runtimes/python).
 
 1. Dùng repository GitHub đã có hoặc kết nối repository của checkout; không push `.env`/venv. Git auto-deploy chưa kết nối nên release đã dùng Vercel CLI.
 2. Trong Vercel, import repository, kiểm tra preset FastAPI và Python3.12 theo pyproject.

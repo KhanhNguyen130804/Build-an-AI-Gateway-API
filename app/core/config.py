@@ -19,7 +19,7 @@ class Settings(BaseSettings):
     port: int = Field(default=8000, ge=1, le=65535)
     database_url: SecretStr | None = None
     openai_api_key: SecretStr | None = None
-    openai_model: str | None = None
+    openai_model: str | None = Field(default=None, min_length=1, max_length=120)
     jwt_secret: SecretStr | None = None
     rate_limit_hash_secret: SecretStr | None = None
     jwt_issuer: str = "ai-gateway"

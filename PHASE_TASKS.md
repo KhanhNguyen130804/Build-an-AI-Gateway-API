@@ -1,21 +1,21 @@
 # AI Gateway — công việc triển khai theo phase
 
-**Cập nhật trạng thái: Phase01–03 đã nghiệm thu local ngày 28/09/2026, Asia/Saigon (UTC+7). Phase04 là bước tiếp theo.**
+**Cập nhật trạng thái: Phase01–03 nghiệm thu local ngày 28/09/2026; vertical slice Phase04 (chat lượt đầu và ledger) nghiệm thu local ngày 29/09/2026 (Asia/Saigon); Phase05 là bước tiếp theo. Full acceptance và cloud release vẫn pending.**
 
 Đây là checklist thực hiện dựa trên kiểm tra workspace hiện tại. Stack người dùng đã chọn: **Python + FastAPI + PostgreSQL**. Mục tiêu là API chạy thật, đủ yêu cầu bắt buộc và có hồ sơ kiểm chứng để nộp challenge.
 
-Hạn theo đề bài: **23:59 ngày 01/10/2026**; mốc nộp nội bộ: **21:00 cùng ngày**. Tại thời điểm kiểm tra còn khoảng **79 giờ 54 phút theo đồng hồ**, theo giả định deadline dùng UTC+7. Giờ rảnh thực tế và timezone của cổng thi chưa được xác nhận riêng.
+Hạn theo đề bài đã ghi nhận: **23:59 ngày 01/10/2026**; mốc nộp nội bộ: **21:00 cùng ngày**. Timezone của cổng thi chưa được xác nhận riêng; không dùng ước lượng thời gian còn lại từ phiên trước.
 
 ## 1. Đánh giá hiện trạng
 
 | Thành phần | Trạng thái hiện tại | Việc còn thiếu |
 |---|---|---|
 | Stack | Python 3.12 + FastAPI + PostgreSQL/Supabase; OpenAI và Vercel đã chọn | Giữ nguyên các quyết định đã chốt |
-| Nền tảng API | App factory, JSON errors/logging, body limit, health endpoints, seeded-user login, JWT bearer và `GET /v1/auth/me` | LLM/business endpoints |
-| Database | Sáu bảng ORM, migration `0001_gateway`, seed Argon2id đã chạy trên Supabase | Thêm persistence logic theo từng phase; least-privilege backend role còn là hardening |
-| LLM | OpenAI structured-output probe thật PASS | Chưa có provider adapter hoặc call nghiệp vụ qua gateway |
-| Kiểm thử | 35 pytest tests + Ruff PASS trong lượt Phase03; live DB/restart evidence của Phase02 | Chưa bao phủ live cloud auth, business behavior hoặc toàn bộ T01–T24 |
-| Deployment | Vercel public skeleton Phase01; Supabase Phase02 đã kiểm tra local | Chưa release DB credentials/code Phase02 lên cloud; Git auto-deploy chưa nối |
+| Nền tảng API | App factory, JSON errors/logging, body limit, health endpoints, seeded-user login/JWT, `GET /v1/auth/me` và first-turn `POST /v1/ai/chat` | Continuation/history, analysis, conversation/usage APIs và các reliability phase |
+| Database | Sáu ORM tables và migration `0001_gateway`; Phase02 evidence ghi nhận schema/seed trên Supabase; Phase04 smoke đọc lại một request/attempt trên PostgreSQL cấu hình local | Trạng thái Supabase hiện tại và least-privilege backend role chưa được xác minh lại; bổ sung persistence theo phase |
+| LLM | OpenAI Responses adapter và request/attempt ledger được nối vào chat lượt đầu; một gateway smoke local thành công ngày 29/09/2026 | Analyze, retry loop, reconciliation, rate limits và đầy đủ failure-mode integration |
+| Kiểm thử | 50 pytest tests và Ruff PASS trong xác minh local Phase04; một smoke đi qua gateway/PostgreSQL/OpenAI | Chưa bao phủ toàn bộ PostgreSQL failure modes, cloud behavior hoặc T01–T24 |
+| Deployment | Evidence gần nhất ngày 28/09/2026 ghi Vercel skeleton Phase01; Phase04 không deploy và không kiểm tra lại cloud | Trạng thái Vercel/credentials/auto-deploy hiện tại chưa xác minh; full release còn pending |
 | Repo | `main` đã push GitHub; lockfiles, scripts và tài liệu trong repo | Tiếp tục cập nhật worklog/evidence theo từng phase |
 | Phạm vi sản phẩm | Kế hoạch P0 ở [PLAN.md](PLAN.md) | Auth → LLM/chat/analyze → reliability/limits/usage → integration/release |
 
@@ -139,16 +139,18 @@ Probe OpenAI, Supabase và skeleton Vercel đã có kết quả, nhưng provider
 
 **Mục tiêu:** một call thật đi qua gateway và được ghi nhận đầy đủ. **Phụ thuộc:**01–03, probe model/key thành công. **Effort:**2h.
 
-- [ ] P04.01 — Interface provider tối giản cho chat/analyze và metadata; implement adapter thật; fake adapter chỉ cho test.
-- [ ] P04.02 — Model/route lấy từ server allowlist; P0 chỉ route `standard`; không nhận arbitrary model/base URL/key từ request.
-- [ ] P04.03 — Tắt retry SDK; đặt per-attempt timeout và total deadline nền tảng ngay bước này.
-- [ ] P04.04 — Tạo request pending sau auth/validation/owner checks; commit trước dispatch; ghi started_at/user/requested model.
-- [ ] P04.05 — Tạo attempt trước mỗi dispatch; lưu provider IDs, actual model nếu có, latency, token metadata và status.
-- [ ] P04.06 — Finalize success/failure; summary tokens/attempt_count tính từ attempt rows; unknown/partial usage có cờ riêng, không điền0 giả.
-- [ ] P04.07 — Đo latency bằng monotonic clock; timestamp lưu UTC; request_id thống nhất response/log/DB.
-- [ ] P04.08 — Chạy vertical slice auth→provider→persist, kiểm tra SQL row và log đã redact.
+- [x] P04.01 — Interface provider tối giản cho chat/analyze và metadata; implement adapter thật; fake adapter chỉ cho test.
+- [x] P04.02 — Model/route lấy từ server allowlist; P0 chỉ route `standard`; không nhận arbitrary model/base URL/key từ request.
+- [x] P04.03 — Tắt retry SDK; đặt per-attempt timeout và total deadline nền tảng ngay bước này.
+- [x] P04.04 — Tạo request pending sau auth/validation/owner checks; commit trước dispatch; ghi started_at/user/requested model.
+- [x] P04.05 — Tạo attempt trước mỗi dispatch; lưu provider IDs, actual model nếu có, latency, token metadata và status.
+- [x] P04.06 — Finalize success/failure; summary tokens/attempt_count tính từ attempt rows; unknown/partial usage có cờ riêng, không điền0 giả.
+- [x] P04.07 — Đo latency bằng monotonic clock; timestamp lưu UTC; request_id thống nhất response/log/DB.
+- [x] P04.08 — Chạy vertical slice auth→provider→persist, kiểm tra SQL row và log đã redact.
 
-**Gate:** call provider thật có row request/attempt, output và metadata thực; không báo success trước khi persist. Lỗi trước và sau dispatch có trạng thái rõ. Chính sách retry/error đầy đủ hoàn thiện ở07.
+**Nghiệm thu local 29/09/2026:** 50 pytest tests PASS; Ruff PASS; một gateway smoke qua PostgreSQL/provider thật trả200, ghi một `AIRequest` và một `ProviderAttempt` terminal `succeeded`, có provider request ID và usage đầy đủ; body/header/DB dùng cùng request ID; JSON logs chỉ ghi metadata đã khử dữ liệu nhạy cảm. Chi tiết và giới hạn ở [AI_WORKLOG.md](AI_WORKLOG.md), Session011. Smoke xác minh một lượt chat mới, không xác minh deploy, continuation, analyze, retry policy hoặc các phase sau.
+
+**Gate:** đạt cho vertical slice Phase04. Lỗi trước/sau dispatch được cover bằng fake tests; chính sách retry/error đầy đủ, reconciliation và các API tiếp theo hoàn thiện ở07/08/05/06.
 
 ## 10. Phase 05 — chat và conversation storage
 
@@ -300,9 +302,9 @@ Các mốc là đích điều phối, chưa phải lịch cá nhân đã xác nh
 
 ## 21. Việc bắt đầu ngay ở phiên implementation tiếp theo
 
-1. Phase04: adapter LLM thật và request/attempt ledger trước chat/analyze.
-2. Sau khi có vertical slice, tiếp tục chat/context ở Phase05 và structured analysis ở Phase06.
-3. Hoàn thiện cloud DB credentials/release ở phase deploy; public skeleton vẫn chưa phải sản phẩm cuối.
+1. Phase05: mở rộng chat từ first-turn sang continuation, lưu messages thành công và tải context có giới hạn.
+2. Phase06: structured ticket analysis qua adapter; Phase07/08 hoàn thiện retry, reconciliation và rate limits.
+3. Hoàn thiện cloud credentials/release ở phase deploy; không suy ra trạng thái hiện tại từ evidence cũ.
 
 P01.01–P01.08, P02.01–P02.06 và P03.01–P03.06 đã nghiệm thu local. Cloud credentials, auth live trên deploy và full release vẫn thuộc các phase tương ứng.
 

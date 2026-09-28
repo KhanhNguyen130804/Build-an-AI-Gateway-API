@@ -2,7 +2,7 @@
   "info": {
     "name": "AI Gateway — prepared examples",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-    "description": "Phase03 login and current-user endpoints are implemented; AI, conversation, and usage examples remain planned and the collection has not been run against a server. Set base_url/username/password privately. Run in order to capture token and conversation_id. Export with secret and session variables cleared. Tests are smoke assertions, not the complete acceptance suite."
+    "description": "Phase04 first-turn chat is implemented. This collection has not been run against a server in this task. Set base_url/username/password privately. Run login and first chat only when database/provider credentials are configured. Follow-up chat, analysis, conversation reads, and usage remain planned; the collection contains future examples for them. Export with secret and session variables cleared. Tests are smoke assertions, not the complete acceptance suite."
   },
   "auth": {
     "type": "bearer",
@@ -171,7 +171,7 @@
             }
           }
         },
-        "description": "Prepared example; requires an implemented server and configured credentials. Contains no real secret."
+        "description": "Implemented Phase04 first-turn request; requires a running server, database, and provider configuration. The returned conversation_id is not accepted for continuation until Phase05. Contains no real secret."
       },
       "event": [
         {
@@ -207,7 +207,7 @@
             }
           }
         },
-        "description": "Prepared example; requires an implemented server and configured credentials. Contains no real secret."
+        "description": "Planned Phase05 continuation example; unsupported by the current runtime. Contains no real secret."
       },
       "event": [
         {

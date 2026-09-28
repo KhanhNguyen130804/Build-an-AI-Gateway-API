@@ -1,1 +1,1 @@
-"""Provider integration is implemented after account/model preflight."""
+"""Provider adapters and their stable gateway-facing contracts."""

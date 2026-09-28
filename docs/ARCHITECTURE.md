@@ -1,8 +1,8 @@
 # Architecture and reliability design
 
-**Mixed status:** Phase01–03 implement the API foundation, database setup, and authentication. The chat/provider/retry/persistence sequence and reliability parameters below remain design until their phases are implemented and verified. Update diagrams to match each accepted phase before submission.
+**Mixed status:** Phase01–04 implement the API foundation, database setup, authentication, and a first-turn `POST /v1/ai/chat` slice through an OpenAI Responses adapter with request/attempt ledger. The live evidence covers one local gateway call. Chat continuation, messages/context, analysis, rate limits, retry loop, reconciliation, and the full end-state sequences below remain design. Use [API.md](API.md) and [PHASE_TASKS.md](../PHASE_TASKS.md) for the exact runtime boundary.
 
-## System boundary
+## Target system boundary
 
 ```mermaid
 flowchart LR
@@ -27,7 +27,7 @@ flowchart LR
 
 Clients hold gateway tokens. Provider API keys stay in server secret configuration. Database is the source of truth for conversation/usage; logs support tracing without duplicating prompt content.
 
-## Successful request sequence
+## Target successful request sequence
 
 ```mermaid
 sequenceDiagram

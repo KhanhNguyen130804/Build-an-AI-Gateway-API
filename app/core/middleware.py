@@ -28,6 +28,7 @@ class RequestContextMiddleware:
         scope.setdefault("state", {})["request_id"] = request_id
         context_token = request_id_context.set(request_id)
         started_at = perf_counter()
+        scope.setdefault("state", {})["request_started_monotonic"] = started_at
         status = 500
         response_started = False
         consumed_bytes = 0

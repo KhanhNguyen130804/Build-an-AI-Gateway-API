@@ -1,6 +1,6 @@
 # Hồ sơ nộp bài và demo
 
-**Draft; cập nhật sau Phase03 local.** Chỉ khẳng định phần có evidence: local authentication đã triển khai, còn AI business endpoints và cloud release chưa xong. Các placeholder và claims phải sửa theo evidence mới trước khi nộp. Nội dung challenge/screenshot là yêu cầu bài thi được người dùng cung cấp; việc chuẩn bị hồ sơ không tự động bao gồm gửi form hoặc chia sẻ ra ngoài.
+**Draft; cập nhật sau Phase04 local (29/09/2026).** Có evidence cho authentication và một lượt chat đầu tiên qua gateway với request/attempt PostgreSQL; continuation, analysis, usage, reliability phases còn lại và cloud release chưa hoàn thành. Các placeholder và claims phải sửa theo evidence mới trước khi nộp. Nội dung challenge/screenshot là yêu cầu bài thi được người dùng cung cấp; việc chuẩn bị hồ sơ không tự động bao gồm gửi form hoặc chia sẻ ra ngoài.
 
 ## Danh sách deliverable
 
@@ -75,10 +75,10 @@ Ghi prompt thực đã dùng trong từng phiên vào [AI_WORKLOG.md](../AI_WORK
 
 ```text
 Tôi cung cấp đề bài cho Codex, chọn Python + FastAPI, rồi triển khai từng phần có kiểm chứng.
-Đến Phase03, gateway có schema PostgreSQL/migration/seed và local login bằng Argon2id cùng
-JWT bearer. Tôi kiểm tra 35 ca local và probe auth read-only với tài khoản seed thật; DB/OpenAI
-checks trước đó có evidence riêng.
-Vercel vẫn chạy skeleton Phase01; chat, phân tích ticket, usage và release cuối còn phải làm.
+Đến Phase04, gateway có schema PostgreSQL/migration/seed, Argon2id/JWT bearer và endpoint chat
+một lượt gọi OpenAI qua gateway, có request/attempt ledger. Tôi kiểm tra 50 ca local, Ruff và
+một live smoke readiness/login/chat với PostgreSQL; output/metadata đã được xác nhận nhưng chưa
+triển khai lên cloud. Continuation, phân tích ticket, usage, retry/rate limit và release cuối còn phải làm.
 ```
 
 Trước nộp, cập nhật đoạn này bằng kết quả implementation/test/deploy mới nhất. Mẫu đầy đủ dưới đây chỉ dùng khi mọi phần ghi trong đó đã được thực hiện:

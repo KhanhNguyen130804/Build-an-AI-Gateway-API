@@ -1,6 +1,6 @@
-# API contract — planned version 1
+# API contract — version 1
 
-**Current runtime:** `/health/live`, database-backed `/health/ready`, seeded-user login, and bearer-protected `GET /v1/auth/me` are implemented. Chat, analysis, conversations, and usage below are planned contracts. [OpenAPI](openapi.json) and [Postman examples](../examples/ai-gateway.postman_collection.json) distinguish the implemented auth slice from those planned routes; FastAPI's runtime schema is authoritative for implemented behavior.
+**Current runtime:** `/health/live`, database-backed `/health/ready`, seeded-user login, bearer-protected `GET /v1/auth/me`, and the first-turn slice of `POST /v1/ai/chat` are implemented. Phase04 chat creates a new conversation and records the AI request/provider attempt, but does not save messages or accept `conversation_id`; continuation, analysis, conversation reads, and usage remain planned. [OpenAPI](openapi.json) and [Postman examples](../examples/ai-gateway.postman_collection.json) retain the fuller planned contract; FastAPI's runtime schema is authoritative for implemented behavior.
 
 Base paths: `/v1` for business APIs; `/health/live`, `/health/ready`, `/docs`, `/openapi.json` outside versioned routes. All JSON fields use snake_case. Every response has an `X-Request-ID` header; AI results/errors also include body request_id, correlated to logs/DB. Generate a server UUID; do not accept an unvalidated client ID as the ledger primary key.
 
@@ -10,7 +10,7 @@ Base paths: `/v1` for business APIs; `/health/live`, `/health/ready`, `/docs`, `
 |---|---|---|---|
 | POST `/v1/auth` | Public | JSON username/password; seeded active users only; same error for unknown, wrong-password, and inactive users | 200 bearer JWT + expiry seconds |
 | GET `/v1/auth/me` | Bearer | Returns the active user identified by the validated JWT; useful for Swagger authorization | 200 UUID + username |
-| POST `/v1/ai/chat` | Bearer | Planned: message, optional conversation_id, route standard | Planned: reply + conversation_id + model + usage |
+| POST `/v1/ai/chat` | Bearer | Implemented first turn: message (max 4,000 chars), optional route `standard`; extra fields such as `conversation_id` and `model` are rejected. Each call creates a new conversation. | 200 reply + request_id + conversation_id + provider + model + latency + usage |
 | POST `/v1/ai/analyze` | Bearer | Planned: ticket text, route standard | Planned: schema v1 + analysis + usage |
 | GET `/v1/conversations` | Bearer | Planned: limit 1–50, offset ≥0; stable descending updated_at/id | Planned: items + total/limit/offset |
 | GET `/v1/conversations/{id}` | Bearer | Planned: owner only; messages ordered by sequence; limit 1–50/offset | Planned: conversation + message page |
@@ -29,7 +29,7 @@ Base paths: `/v1` for business APIs; `/health/live`, `/health/ready`, `/docs`, `
 }
 ```
 
-The first successful response supplies `conversation_id`. Submit it with the next message. Server loads recent successful history; client cannot supply a system message, user_id, provider key, base URL or arbitrary model.
+Phase04 accepts this body for one turn and returns a new `conversation_id`. The ID is not accepted by another chat call yet; messages are not persisted and no history is loaded. Phase05 will add continuation and saved context. The client cannot supply a system message, user_id, provider key, base URL or arbitrary model.
 
 Success shape (values below are illustrative, not live evidence):
 
@@ -95,7 +95,7 @@ Details contain only safe field names or retry/context information; never raw pr
 | 422 | VALIDATION_ERROR / MODEL_REFUSAL | No; correct input or respect refusal |
 | 429 | RATE_LIMITED / DAILY_QUOTA_EXCEEDED | Local rejection; Retry-After; zero upstream calls |
 | 502 | UPSTREAM_ERROR / INVALID_MODEL_OUTPUT / INCOMPLETE_MODEL_OUTPUT | Internal bounded retries only for eligible transient errors |
-| 503 | PROVIDER_UNAVAILABLE / UPSTREAM_RATE_LIMITED / PERSISTENCE_ERROR | No silent success; safe Retry-After where known |
+| 503 | PROVIDER_NOT_CONFIGURED / PROVIDER_UNAVAILABLE / UPSTREAM_RATE_LIMITED / PERSISTENCE_ERROR | No silent success; safe Retry-After where known |
 | 504 | UPSTREAM_TIMEOUT | No automatic ambiguous read-timeout replay |
 | 500 | INTERNAL_ERROR | Redacted detail; request ID for diagnosis |
 

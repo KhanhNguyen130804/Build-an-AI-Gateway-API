@@ -1,6 +1,6 @@
 # Acceptance and evidence plan
 
-**Full T01–T24 acceptance is still pending.**35 local pytest tests pass in the Phase03 implementation run: the 22 previously recorded foundation/seed tests plus auth, JWT, bearer, owner-query, and seed-length boundary cases. The separate [read-only Phase03 auth probe](../artifacts/evidence/phase03.json) passed against the seeded Supabase account; it makes no DB writes and no LLM calls. Historical evidence also covers [Supabase schema/constraints/grants/RLS/seed/restart](../artifacts/evidence/phase02.json), [OpenAI structured probe](../artifacts/evidence/provider-20260928.json) and [Vercel skeleton](../artifacts/evidence/vercel-phase01.json). The auth unit tests use an in-process fake session and do not prove live cloud deployment; chat/analyze/retry/usage/limiter behavior remains unimplemented. See [Phase02 commands](PHASE02_DATABASE.md).
+**Full T01–T24 acceptance is still pending.** Phase03's 35 passing tests and auth probe are historical. On 29/09/2026 the current local suite reports 50 pytest tests and Ruff PASS. Phase04 tests use fake provider/session for deterministic branches; one separate gateway smoke used PostgreSQL and OpenAI, returned200, persisted one succeeded AIRequest and one succeeded ProviderAttempt, and verified request-ID correlation, provider request ID, usage metadata and redacted logs. This proves one first-turn path only; it does not verify continuation, analyze, full retry policy, rate limits, deployment or all PostgreSQL failure modes. Historical evidence also covers [Supabase schema/constraints/grants/RLS/seed/restart](../artifacts/evidence/phase02.json), [direct OpenAI structured probe](../artifacts/evidence/provider-20260928.json) and [Vercel skeleton](../artifacts/evidence/vercel-phase01.json). See [Phase02 commands](PHASE02_DATABASE.md) and [AI_WORKLOG Session011](../AI_WORKLOG.md).
 
 Run meaningful tests against PostgreSQL rather than relying on SQLite behavior. Fake the provider adapter for deterministic errors/concurrency; keep a small explicit live-provider smoke test. Fake responses are test fixtures, never the production backend or an unlabeled demo.
 
@@ -37,16 +37,15 @@ Tests can combine cases in a small suite. Assert invariants and external behavio
 
 ## Live smoke, bounded cost
 
-1. Readiness confirms DB, with no provider charge.
-2. Login with reviewer credentials.
-3. Chat: “Hãy nhớ mã tham chiếu là BLUE-17.”
-4. Second chat in same conversation: “Mã tham chiếu tôi vừa đưa là gì?” Check context and inspect input captured in controlled test; live answer may vary but should retain the code.
-5. Analyze the payment/account ticket in examples. Confirm schema and forced human review for billing/account.
-6. Fetch history and usage; record before/after delta of three logical requests and provider metadata.
-7. Try missing-token access, confirm401. Cross-user and rate limit use controlled test credentials, not uncontrolled paid loops.
-8. Restart deployed web service; fetch saved conversation again.
+Phase04's bounded live check (readiness, seeded login, one first-turn chat) completed on 29/09/2026; details are in AI_WORKLOG Session011. The following steps remain future acceptance work:
 
-Three live calls are a starting smoke budget; further calls need a purpose. Do not run the full test suite against a paid provider. Never print secrets while collecting evidence.
+1. Second chat in same conversation: “Mã tham chiếu tôi vừa đưa là gì?” Check context and inspect input captured in controlled test; live answer may vary but should retain the code.
+2. Analyze the payment/account ticket in examples. Confirm schema and forced human review for billing/account.
+3. Fetch history and usage; record before/after delta of logical requests and provider metadata.
+4. Try missing-token access, confirm401. Cross-user and rate limit use controlled test credentials, not uncontrolled paid loops.
+5. Restart deployed web service; fetch saved conversation again.
+
+One paid gateway call was used for Phase04. Further live calls need a purpose. Do not run the full test suite against a paid provider. Never print secrets while collecting evidence.
 
 ## Evidence record template
 
