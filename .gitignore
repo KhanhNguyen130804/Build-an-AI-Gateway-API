@@ -18,3 +18,5 @@ build/
 *.log
 artifacts/private/
 examples/*local*environment*.json
+
+.vercel

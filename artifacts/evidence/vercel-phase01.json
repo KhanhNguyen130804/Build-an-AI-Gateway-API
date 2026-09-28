@@ -1,0 +1,36 @@
+{
+  "checked_at_utc": "2026-09-28T10:42:47.978652+00:00",
+  "scope": "Phase01 skeleton deployed in development configuration; no remote DB/LLM integration",
+  "deployment_url": "https://ai-gateway-challenge.vercel.app",
+  "deployment_build": "PASS",
+  "public_http_checks": [
+    {
+      "path": "/health/live",
+      "status": 200,
+      "request_id": "2f1cfed8-0844-4f62-b64c-1152876727d1"
+    },
+    {
+      "path": "/health/ready",
+      "status": 503,
+      "request_id": "751acb87-f054-4a90-9ec9-50671b449388"
+    },
+    {
+      "path": "/docs",
+      "status": 200,
+      "request_id": "4e8c95b8-6c23-46a3-9edd-1290cb7926cb"
+    },
+    {
+      "path": "/openapi.json",
+      "status": 200,
+      "request_id": "15918294-1311-4a69-91f9-33629e1aa480"
+    },
+    {
+      "path": "/v1/ai/chat",
+      "status": 404,
+      "request_id": "c1a09b63-bcd3-4477-b91c-af3d6bf43301"
+    }
+  ],
+  "git_auto_deploy": "NOT_CONNECTED",
+  "cloud_credentials": "NOT_CONFIGURED",
+  "full_product_release": false
+}

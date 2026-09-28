@@ -1,6 +1,6 @@
 # Bắt đầu với OpenAI, Supabase và Vercel
 
-**Trạng thái28/09/2026:** Phase01 chạy local và20 test đã pass. Chưa kết nối DB/LLM thật, chưa deploy. Các bước dưới đây chuẩn bị phần tài khoản mà project chưa có quyền truy cập.
+**Cập nhật28/09/2026:** Phase01 hoàn tất8/8 mục.20 tests PASS; Supabase SELECT1/OpenAI structured probes và Vercel skeleton build/public smoke PASS. [Swagger online](https://ai-gateway-challenge.vercel.app/docs). Cloud chưa cấu hình DB/LLM credentials; business integration chưa có. Các hướng dẫn tài khoản bên dưới đã thực hiện cho local, giữ lại để tái lập.
 
 ## 1. Xem phần đã chạy
 

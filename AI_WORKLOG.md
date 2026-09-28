@@ -64,6 +64,14 @@ This is an evidence log, not a list of planned accomplishments. Status labels: P
 
 **VERIFIED:** remote repository had no refs. Staged51 files, scanned staged diff against configured secret values and checked `.env`/venv exclusion: PASS. Re-ran20 tests and Ruff: PASS. Created initial commit `24bcec4` and pushed branch `main` to the supplied GitHub repository without force. Local commit used a generic project author for the challenge. Installed/invoked Vercel CLI60.1.3 through npx; account/deployment still being checked. Browser automation failed to initialize (sandbox helper error); no browser account actions were performed. Secret values were not printed or pushed. Vercel actual deployment remains pending; Phase02 not started.
 
+## Session 007 — Phase01 Vercel acceptance, 28/09/2026
+
+**Actual user context:** completed device authorization, showed Authorization Successful and asked the next step. CLI confirmed signed in.
+
+**Execution/corrections:** first deploy failed because workspace folder name was not a valid Vercel project name. Retried with project `ai-gateway-challenge`; build and deploy succeeded. Automatic GitHub repository connection failed; source upload/CLI deploy succeeded independently. This is explicitly recorded, not treated as working auto-deploy.
+
+**VERIFIED:** Vercel Python3.12 build succeeded; public alias `https://ai-gateway-challenge.vercel.app`. Unauthenticated HTTP smoke: live/docs/OpenAPI200, readiness503, missing business endpoint404; every response had UUID request correlation and errors matched body/header IDs. Runtime OpenAPI contains only two health endpoints. [Evidence](artifacts/evidence/vercel-phase01.json). Deployed source matches GitHub commit471a653 except harmless CLI-added ignore metadata. Cloud uses default development settings; private local `.env` was excluded and cloud provider/database credentials were not configured. Full release belongs to later phases. Phase01 P01.01–08 accepted, not full challenge completion.
+
 ## Development session template
 
 Copy this section for each real session:

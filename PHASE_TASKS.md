@@ -50,7 +50,7 @@ Effort là giờ thực hiện dự kiến, không phải thời gian chờ tài
 | Phase | Mục tiêu | Phụ thuộc chính | Giờ | Trạng thái hiện tại |
 |---|---|---|---:|---|
 | 00 | Kiểm tra hiện trạng, thống nhất đầu vào thiết kế | Không | Đã thực hiện kiểm tra | ĐÃ HOÀN THÀNH ĐÁNH GIÁ |
-| 01 | Môi trường, skeleton, config, health, preflight provider/host | 00; phần provider/host cần đầu vào | 2.0 | CẦN ĐẦU VÀO; local đã kiểm chứng |
+| 01 | Môi trường, skeleton, config, health, preflight provider/host | 00 | 2.0 | ĐÃ NGHIỆM THU — 8/8 mục |
 | 02 | PostgreSQL, ORM, migration, seed | 01; DB truy cập được | 1.5 | CHƯA BẮT ĐẦU |
 | 03 | Authentication và phân quyền cơ bản | 02 | 1.5 | CHƯA BẮT ĐẦU |
 | 04 | Adapter LLM thật và request/attempt ledger | 01–03; model/key đã xác minh | 2.0 | CHƯA BẮT ĐẦU |
@@ -107,9 +107,9 @@ Nếu I02–I04 chưa có, vẫn có thể dựng runtime, skeleton, schema/mode
 - [x] P01.05 — Request UUID, JSON logging/redaction, error envelope, validation/malformed JSON và body limits; kiểm chứng bằng tests.
 - [x] P01.06 — Local live/docs/OpenAPI200; readiness503 khi chưa gắn DB; HTTP smoke PASS.
 - [x] P01.07 — Probe LLM thật và structured output PASS; returned model `gpt-6-luna`, input43/output12 tokens. [Evidence](artifacts/evidence/provider-20260928.json). Chưa chứng minh ledger hay business endpoint đã chạy.
-- [ ] P01.08 — Chốt đường deploy và build/start configuration; khởi động P11.01 để kiểm tra build skeleton sớm.
+- [x] P01.08 — Vercel build/deploy skeleton PASS, Python3.12; public live/docs/OpenAPI200, readiness503 đúng Phase01 và lỗi404 có request ID. [URL](https://ai-gateway-challenge.vercel.app/docs), [evidence](artifacts/evidence/vercel-phase01.json).
 
-**Tiến độ P01.07–08:** probe Supabase `SELECT 1` và OpenAI structured output thật đều PASS. Đã có Vercel entrypoint/max duration/Python và build wheel local PASS; container build và Vercel build/deploy chưa chạy, P01.08 chưa tick. Hướng dẫn: [GETTING_STARTED.md](docs/GETTING_STARTED.md). Các ghi nhận thiếu key/model/DB trước đó là baseline lịch sử; đầu vào kết nối đã được kiểm chứng qua hai probe.
+**Nghiệm thu Phase01:**8/8 mục hoàn thành. Probe Supabase/OpenAI thật và Vercel build/public HTTP smoke PASS. Bản cloud là skeleton development, chưa cấu hình cloud DB/LLM; thuộc tích hợp/release các phase sau. GitHub auto-deploy chưa kết nối, hiện dùng CLI. Container không phải host đã chọn và chưa build. Các ghi nhận thiếu cấu hình trước đó là lịch sử.
 
 **Đầu ra dự kiến:** `.venv`, skeleton `app/`, dependency files, config/error/log foundation, health/docs local; probe provider và host nếu đầu vào có.
 
@@ -313,14 +313,14 @@ Các mốc là đích điều phối, chưa phải lịch cá nhân đã xác nh
 3. Phase02: ORM sáu bảng trong schema nội bộ `gateway`, Alembic, seed, readiness; kiểm tra grants/exposure của Supabase. Chuẩn bị code độc lập được khi chưa có DB, nhưng migration/persistence chưa nghiệm thu.
 4. Thử deploy skeleton Vercel sớm; sau DB thực hiện auth và vertical slice gọi thật/lưu ledger.
 
-P01.01–P01.07 đã hoàn thành. Source đã push GitHub main (24bcec4). P01.08 còn build/deploy Vercel thật và health/docs URL online. Người dùng yêu cầu chỉ chuyển Phase02 khi Phase01 hoàn thành100%, nên chưa bắt đầu Phase02 theo điều kiện hiện tại.
+P01.01–P01.08 đã nghiệm thu. Source đã push GitHub main; skeleton Vercel public chạy đúng. Điều kiện100% Phase01 đã đáp ứng. Tiếp theo Phase02: database ORM/migrations/seed/readiness; cloud credentials và full release vẫn thuộc các phase tương ứng.
 
 ## 22. Nhật ký nghiệm thu phase — điền khi thực hiện
 
 | Phase | Task IDs hoàn thành | Code version/commit | Command/test + kết quả | Evidence | Blocker/việc còn lại | Thời điểm |
 |---|---|---|---|---|---|---|
 | 00 | P00.01–P00.04 | Workspace chưa init Git | Inventory + đọc docs + path/runtime checks | Hiện trạng ở mục1 | I01–I06 chưa xác minh đầy đủ; chưa có implementation | 28/09/2026 16:05 UTC+7 |
-| 01 | P01.01–P01.07 | Git local, chưa commit | pytest20 PASS; Ruff/imports/pip check/wheel/HTTP PASS; Supabase SELECT1 và OpenAI structured probe PASS | [phase01.json](artifacts/evidence/phase01.json), [provider probe](artifacts/evidence/provider-20260928.json), [DB probe](artifacts/evidence/preflight-20260928.json) | P01.08: Vercel build/deploy thật pending | 28/09/2026 |
+| 01 | P01.01–P01.08 | GitHub main; deployed source471a653 | pytest20 PASS; Ruff/imports/pip check/wheel/HTTP PASS; Supabase/OpenAI probes PASS; Vercel build/public smoke PASS | [local](artifacts/evidence/phase01.json), [provider](artifacts/evidence/provider-20260928.json), [DB](artifacts/evidence/preflight-20260928.json), [Vercel](artifacts/evidence/vercel-phase01.json) | Không còn blocker Phase01; full integration/release và Git auto-deploy vẫn chưa thực hiện | 28/09/2026 |
 | 02–13 | Chưa có | Chưa có | NOT RUN | Chưa có | Chưa bắt đầu | — |
 
 Tạo một dòng riêng cho từng phase khi làm; cập nhật checkbox, bảng trạng thái ở mục3 và AI_WORKLOG cùng lúc. Không dùng bảng này như bằng chứng PASS cho backend khi chỉ mới đọc tài liệu.
