@@ -1,6 +1,6 @@
 # AI Gateway
 
-**Status: Phase01 verified —8/8 tasks, 28/09/2026.** FastAPI health/docs, config, request correlation, error handling, JSON logging and body limits run locally and on Vercel;20 foundation tests pass. Real Supabase SELECT1 and OpenAI structured probes pass. Database integration/auth/LLM business endpoints are not implemented yet.
+**Status: Phase01 and Phase02 verified, 28/09/2026.** Six PostgreSQL ORM tables, Alembic migration, Argon2id seed and real DB readiness/persistence are verified on Supabase;22 local tests pass. Live database constraints/security checks and two actual runner restarts pass. Vercel currently serves the Phase01 skeleton. Auth and AI business endpoints are not implemented yet.
 
 Planned product: a central authenticated API for chat and structured support-ticket analysis, with stored conversations and reliable usage metrics. Selected services: OpenAI, Supabase PostgreSQL and Vercel. Cloud currently runs a development skeleton without provider/DB credentials; production integration remains later work. Deploy uses CLI; automatic Git deploy is not connected.
 
@@ -8,15 +8,15 @@ Start with [PHASE_TASKS.md](PHASE_TASKS.md) for the current project assessment a
 
 | Artifact | Purpose | Current status |
 |---|---|---|
-| [PHASE_TASKS.md](PHASE_TASKS.md) | Current assessment, phase task IDs, dependencies and acceptance gates | Phase01 complete8/8 |
+| [PHASE_TASKS.md](PHASE_TASKS.md) | Current assessment, phase task IDs, dependencies and acceptance gates | Phase01 complete8/8; Phase02 complete6/6 |
 | [Getting started](docs/GETTING_STARTED.md) | Local commands and OpenAI/Supabase/Vercel account setup | Prepared for selected services |
 | [PLAN.md](PLAN.md) | Scope, time budget, milestones, backlog, requirement coverage | Prepared |
 | [Stack comparison](docs/STACK_OPTIONS.md) | Tradeoffs, dependencies, proposed layouts | FastAPI selected |
 | [Architecture](docs/ARCHITECTURE.md) | Diagrams, workflow, security and reliability decisions | Design |
-| [Database](docs/DATABASE.md) and [schema.sql](db/schema.sql) | Data model, constraints, usage calculations | Design, not applied to a database |
+| [Database](docs/DATABASE.md) and [Phase02 runbook](docs/PHASE02_DATABASE.md) | ORM, migration, seed, constraints and verification | Applied and verified on Supabase; usage calculations still design |
 | [API contract](docs/API.md) and [OpenAPI](docs/openapi.json) | Endpoints, schemas, error contract | Design, not a live API specification |
 | [Postman collection](examples/ai-gateway.postman_collection.json) | Importable happy-path and authorization examples | Prepared; not exercised against a server |
-| [Verification](docs/VERIFICATION.md) | Full acceptance plan |20 foundation tests pass; full T01–T24 still pending |
+| [Verification](docs/VERIFICATION.md) | Full acceptance plan |22 local tests and Phase02 live checks PASS; full T01–T24 still pending |
 | [Deployment](docs/DEPLOYMENT.md) | Environment readiness, deployment and rollback runbook | Skeleton Vercel build/public smoke PASS; full release pending |
 | [Submission](docs/SUBMISSION.md) | Demo script, form copy, README completion checklist | Draft with explicit placeholders |
 | [Prompts](docs/PROMPTS.md) | Implementation/review prompts with clear outputs | Prepared; future prompts not yet used |
@@ -51,7 +51,7 @@ Use Python3.12. In this workspace `.venv` and private `.env` already exist. From
 & .\.venv\Scripts\python.exe -m app
 ```
 
-Open [local Swagger](http://127.0.0.1:8000/docs). Liveness returns200; readiness intentionally returns503 until Phase02 attaches a verified database probe. Business endpoints currently return404. Development may start without DB/provider access; production requires complete configuration.
+Open [local Swagger](http://127.0.0.1:8000/docs). Liveness returns200; readiness returns200 when the configured DB and migration are accessible, otherwise503. Business endpoints currently return404. Development may start without DB/provider access; production requires complete configuration. Follow the [Phase02 runbook](docs/PHASE02_DATABASE.md) for migration and seed commands.
 
 ```powershell
 & .\.venv\Scripts\python.exe -m pytest -q
@@ -60,6 +60,6 @@ Open [local Swagger](http://127.0.0.1:8000/docs). Liveness returns200; readiness
 
 Verified on Windows/Python3.12.14:20 tests, Ruff, imports/pip check, local HTTP and wheel build. [Local evidence](artifacts/evidence/phase01.json), [Supabase probe](artifacts/evidence/preflight-20260928.json), [OpenAI probe](artifacts/evidence/provider-20260928.json), [Vercel Python3.12 build/public smoke](artifacts/evidence/vercel-phase01.json). Full clean-checkout/container/business integration verification is pending. Lock inputs are `requirements.in`/`requirements-dev.in`; pinned files are `requirements.txt`/`requirements-dev.txt`.
 
-For conventional Uvicorn CLI use `uvicorn app.main:create_app --factory`; the local runner additionally sets JSON logging and a Windows-compatible asyncio policy. Vercel uses the separate `app.vercel:app` entrypoint.
+For conventional Uvicorn CLI use `uvicorn app.main:create_app --factory`; on Windows add `--loop asyncio:SelectorEventLoop` for psycopg async compatibility. The recommended `python -m app` runner sets the correct factory and JSON logging. Vercel uses `app.vercel:app`.
 
 The final README must explain the problem, architecture/workflow, database, API, AI usage, metrics, reliability, completed work and limitations. Use the checklist in `docs/SUBMISSION.md`; remove planning-only claims when their corresponding functionality is verified.

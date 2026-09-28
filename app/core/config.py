@@ -33,7 +33,7 @@ class Settings(BaseSettings):
     llm_deadline_seconds: float = Field(default=27, gt=0)
     attempt_timeout_seconds: float = Field(default=10, gt=0)
     connect_timeout_seconds: float = Field(default=3, gt=0)
-    database_check_timeout_seconds: float = Field(default=2, gt=0, le=10)
+    database_check_timeout_seconds: float = Field(default=5, gt=0, le=10)
     max_provider_attempts: int = Field(default=3, ge=1, le=3)
     sdk_max_retries: int = Field(default=0, ge=0, le=0)
     chat_max_output_tokens: PositiveInt = 512

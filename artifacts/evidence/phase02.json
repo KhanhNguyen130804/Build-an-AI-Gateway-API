@@ -1,0 +1,51 @@
+{
+  "checked_at_utc": "2026-09-28T11:46:08.150475+00:00",
+  "status": "PASS",
+  "revision": "0001_gateway",
+  "database_checks": [
+    "six_tables_and_revision",
+    "anon_authenticated_denied_and_rls_enabled",
+    "request_owner_fk",
+    "conversation_claim_owner_fk",
+    "unique_sequence",
+    "unique_request_role",
+    "message_owner_fk",
+    "message_request_owner_fk",
+    "positive_sequence",
+    "nonnegative_tokens",
+    "terminal_timing_required",
+    "known_usage_requires_tokens",
+    "utc_timestamps",
+    "test_fixtures_rolled_back"
+  ],
+  "argon2_hashes_verified": true,
+  "repeat_seed_preserves_ids_and_hashes": true,
+  "fresh_app_instances_readiness": [
+    200,
+    200
+  ],
+  "persisted_users_after_recreation": 2,
+  "scope": "Real Supabase migration/seed/constraints and fresh local app instances; no LLM call",
+  "actual_runner_restart_checks": [
+    {
+      "fresh_process": 1,
+      "readiness_status": 200,
+      "persisted_seed_users": 2
+    },
+    {
+      "fresh_process": 2,
+      "readiness_status": 200,
+      "persisted_seed_users": 2
+    }
+  ],
+  "final_verified_at_utc": "2026-09-28T11:54:34.572440+00:00",
+  "pytest_passed": 22,
+  "ruff": "PASS",
+  "pip_check": "PASS",
+  "alembic_upgrade_repeat": "PASS",
+  "alembic_drift_check": "PASS",
+  "running_local_readiness": {
+    "status": 200,
+    "request_id": "243f66d3-2a88-4f80-8d52-bcb6a8c8f671"
+  }
+}

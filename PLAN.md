@@ -1,6 +1,6 @@
 # Kế hoạch triển khai AI Gateway
 
-Kế hoạch gốc: 28/09/2026. Cập nhật triển khai: Phase01 foundation chạy local/20 tests pass; xem PHASE_TASKS.md cho trạng thái task hiện tại. Business APIs, DB/LLM thật và deployed API chưa hoàn thành.
+Kế hoạch gốc:28/09/2026. Cập nhật: Phase01 và Phase02 nghiệm thu;22 tests local và kiểm tra Supabase/migration/seed/constraints/restart PASS. OpenAI live probe PASS; Vercel đang chạy skeleton Phase01. Business APIs, cloud DB integration và full release chưa hoàn thành. Xem PHASE_TASKS.md cho trạng thái từng mục.
 
 ## 1. Mục tiêu và thời gian
 

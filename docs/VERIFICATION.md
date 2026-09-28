@@ -1,6 +1,6 @@
 # Acceptance and evidence plan
 
-**Full T01–T24 acceptance is still pending.** Phase01 foundation now has20 passing tests in `tests/test_foundation.py`, covering local health/docs, readiness failure/timeout with controlled probes, error correlation, validation/redaction, body limits, request isolation and config invariants. [Local HTTP evidence](../artifacts/evidence/phase01.json). These checks do not prove actual DB/auth/provider/retry/usage/deployment behavior; preparation checks, deterministic tests and live integration evidence remain separate.
+**Full T01–T24 acceptance is still pending.**22 local pytest tests pass:20 foundation checks plus2 seed validation cases. Separate live evidence covers [Supabase schema/constraints/grants/RLS/seed/restart](../artifacts/evidence/phase02.json), [OpenAI structured probe](../artifacts/evidence/provider-20260928.json) and [Vercel skeleton](../artifacts/evidence/vercel-phase01.json). These do not prove unimplemented auth/chat/analyze/retry/usage/limiter behavior. See [Phase02 commands](PHASE02_DATABASE.md).
 
 Run meaningful tests against PostgreSQL rather than relying on SQLite behavior. Fake the provider adapter for deterministic errors/concurrency; keep a small explicit live-provider smoke test. Fake responses are test fixtures, never the production backend or an unlabeled demo.
 

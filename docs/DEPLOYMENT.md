@@ -1,6 +1,6 @@
 # Environment and deployment runbook
 
-**Phase01 local foundation verified; external deployment NOT RUN.** Selected path: **Supabase PostgreSQL + Vercel + OpenAI**, confirmed by the user. See [GETTING_STARTED.md](GETTING_STARTED.md) for the current account/config steps and serverless-specific connection requirements. Runtime: project `.venv`, Python3.12.14; runtime/dev lockfiles generated. Docker/uv/gh remain unavailable in PATH.
+**Current:** Phase01 Vercel skeleton public smoke PASS at [Swagger](https://ai-gateway-challenge.vercel.app/docs); GitHub source pushed. Phase02 real Supabase migration/seed/readiness verified locally; cloud DB credentials/Phase02 release not configured. Selected path: Supabase + Vercel + OpenAI. Deploy uses Vercel CLI; Git auto-deploy connection failed and remains pending. Runtime Python3.12; Docker/uv/gh not in PATH. Earlier inventory rows below are historical Phase01 preparation; use PHASE_TASKS.md for current acceptance.
 
 ## Readiness inventory
 

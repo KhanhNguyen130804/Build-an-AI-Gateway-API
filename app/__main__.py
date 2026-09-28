@@ -18,7 +18,13 @@ def main() -> int:
     if sys.platform == "win32":
         asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
     uvicorn.run(
-        create_app(settings), host="0.0.0.0", port=settings.port, access_log=False, log_config=None
+        create_app(settings),
+        host="0.0.0.0",
+        port=settings.port,
+        access_log=False,
+        log_config=None,
+        # Uvicorn's factory overrides the policy and otherwise picks Proactor on Windows.
+        loop="asyncio:SelectorEventLoop" if sys.platform == "win32" else "auto",
     )
     return 0
 

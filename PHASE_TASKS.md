@@ -51,7 +51,7 @@ Effort là giờ thực hiện dự kiến, không phải thời gian chờ tài
 |---|---|---|---:|---|
 | 00 | Kiểm tra hiện trạng, thống nhất đầu vào thiết kế | Không | Đã thực hiện kiểm tra | ĐÃ HOÀN THÀNH ĐÁNH GIÁ |
 | 01 | Môi trường, skeleton, config, health, preflight provider/host | 00 | 2.0 | ĐÃ NGHIỆM THU — 8/8 mục |
-| 02 | PostgreSQL, ORM, migration, seed | 01; DB truy cập được | 1.5 | CHƯA BẮT ĐẦU |
+| 02 | PostgreSQL, ORM, migration, seed | 01; DB truy cập được | 1.5 | ĐÃ NGHIỆM THU — 6/6 mục |
 | 03 | Authentication và phân quyền cơ bản | 02 | 1.5 | CHƯA BẮT ĐẦU |
 | 04 | Adapter LLM thật và request/attempt ledger | 01–03; model/key đã xác minh | 2.0 | CHƯA BẮT ĐẦU |
 | 05 | Chat, context và lưu hội thoại | 04 | 2.0 | CHƯA BẮT ĐẦU |
@@ -119,12 +119,14 @@ Nếu I02–I04 chưa có, vẫn có thể dựng runtime, skeleton, schema/mode
 
 **Mục tiêu:** có PostgreSQL thật và schema dùng được. **Phụ thuộc:**01 + I03. **Effort:**1.5h. **Tham khảo:** [DATABASE.md](docs/DATABASE.md), [schema.sql](db/schema.sql).
 
-- [ ] P02.01 — Kết nối DB từ project runtime; chuẩn hóa driver URL trong config; kiểm tra `SELECT 1`, pool/statement timeout và timezone UTC.
-- [ ] P02.02 — Tạo ORM models cho users, conversations, messages, ai_requests, provider_attempts, rate_limit_buckets.
-- [ ] P02.03 — Thiết lập Alembic; tạo migration ban đầu với constraints/index theo thiết kế.
-- [ ] P02.04 — Xử lý thứ tự tạo khóa ngoại vòng giữa conversation claim và request; kiểm tra trên DB mới, không chỉ đọc generated SQL.
-- [ ] P02.05 — Tạo seed idempotent cho hai user; hash password; chạy lại không tạo trùng/đổi password ngoài ý muốn.
-- [ ] P02.06 — Hoàn thiện readiness DB; xác nhận restart web service vẫn thấy dữ liệu đã lưu.
+- [x] P02.01 — Runtime psycopg/SQLAlchemy kết nối Supabase; NullPool, disabled prepared statements, transaction-local timeouts và UTC được cấu hình/kiểm tra.
+- [x] P02.02 — ORM models đủ sáu bảng, schema-qualified `gateway`.
+- [x] P02.03 — Alembic revision0001_gateway áp dụng DB trống; rerun upgrade và drift check PASS.
+- [x] P02.04 — FK vòng đúng thứ tự; live owner/claim/message/sequence/token/timing constraints PASS; fixtures rollback.
+- [x] P02.05 — Seed hai user Argon2id; rerun giữ nguyên UUID/hash, kể cả khi đổi input password. Mật khẩu riêng trong `.env`.
+- [x] P02.06 — Readiness200 với DB/migration thật; fresh app instances và hai process restart vẫn đọc được hai user.
+
+**Evidence:** [phase02.json](artifacts/evidence/phase02.json), [runbook](docs/PHASE02_DATABASE.md). RLS/grants của anon/authenticated được kiểm chứng. Backend credential hiện privileged; dedicated least-privilege role và cloud DB deployment chưa thực hiện. Public Vercel vẫn là Phase01 skeleton; việc này thuộc release sau.
 
 **Đầu ra dự kiến:** `app/db/`, `migrations/`, `alembic.ini`, seed command, readiness đúng trạng thái.
 
@@ -308,12 +310,12 @@ Các mốc là đích điều phối, chưa phải lịch cá nhân đã xác nh
 
 ## 21. Việc bắt đầu ngay ở phiên implementation tiếp theo
 
-1. Cấu hình key/model OpenAI và URL Supabase trong `.env` theo hướng dẫn; không gửi secrets qua chat.
-2. Khi có cấu hình: chạy preflight thật cho provider/DB; ghi metadata an toàn và xử lý lỗi quyền truy cập.
-3. Phase02: ORM sáu bảng trong schema nội bộ `gateway`, Alembic, seed, readiness; kiểm tra grants/exposure của Supabase. Chuẩn bị code độc lập được khi chưa có DB, nhưng migration/persistence chưa nghiệm thu.
-4. Thử deploy skeleton Vercel sớm; sau DB thực hiện auth và vertical slice gọi thật/lưu ledger.
+1. Phase03: JSON login, verify Argon2id và JWT claims/expiry/signature.
+2. Thêm bearer dependency và owner-query primitive; chạy auth/security tests.
+3. Phase04: adapter LLM thật và request/attempt ledger trước chat/analyze.
+4. Hoàn thiện cloud DB credentials/release ở phase deploy; public skeleton vẫn chưa phải sản phẩm cuối.
 
-P01.01–P01.08 đã nghiệm thu. Source đã push GitHub main; skeleton Vercel public chạy đúng. Điều kiện100% Phase01 đã đáp ứng. Tiếp theo Phase02: database ORM/migrations/seed/readiness; cloud credentials và full release vẫn thuộc các phase tương ứng.
+P01.01–P01.08 và P02.01–P02.06 đã nghiệm thu. Tiếp theo Phase03 authentication. Cloud credentials và full release vẫn thuộc các phase tương ứng.
 
 ## 22. Nhật ký nghiệm thu phase — điền khi thực hiện
 
@@ -321,6 +323,7 @@ P01.01–P01.08 đã nghiệm thu. Source đã push GitHub main; skeleton Vercel
 |---|---|---|---|---|---|---|
 | 00 | P00.01–P00.04 | Workspace chưa init Git | Inventory + đọc docs + path/runtime checks | Hiện trạng ở mục1 | I01–I06 chưa xác minh đầy đủ; chưa có implementation | 28/09/2026 16:05 UTC+7 |
 | 01 | P01.01–P01.08 | GitHub main; deployed source471a653 | pytest20 PASS; Ruff/imports/pip check/wheel/HTTP PASS; Supabase/OpenAI probes PASS; Vercel build/public smoke PASS | [local](artifacts/evidence/phase01.json), [provider](artifacts/evidence/provider-20260928.json), [DB](artifacts/evidence/preflight-20260928.json), [Vercel](artifacts/evidence/vercel-phase01.json) | Không còn blocker Phase01; full integration/release và Git auto-deploy vẫn chưa thực hiện | 28/09/2026 |
-| 02–13 | Chưa có | Chưa có | NOT RUN | Chưa có | Chưa bắt đầu | — |
+| 02 | P02.01–P02.06 | Phase02 working tree | migrate upgrade/check PASS; seed repeat PASS;14 live DB checks, hashes/app/process restart PASS;22 local tests PASS | [phase02](artifacts/evidence/phase02.json) | Cloud Phase02 chưa release; Phase03 auth chưa làm | 28/09/2026 |
+| 03–13 | Chưa có | Chưa có | NOT RUN | Chưa có | Chưa bắt đầu | — |
 
 Tạo một dòng riêng cho từng phase khi làm; cập nhật checkbox, bảng trạng thái ở mục3 và AI_WORKLOG cùng lúc. Không dùng bảng này như bằng chứng PASS cho backend khi chỉ mới đọc tài liệu.

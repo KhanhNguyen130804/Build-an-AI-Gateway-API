@@ -72,6 +72,18 @@ This is an evidence log, not a list of planned accomplishments. Status labels: P
 
 **VERIFIED:** Vercel Python3.12 build succeeded; public alias `https://ai-gateway-challenge.vercel.app`. Unauthenticated HTTP smoke: live/docs/OpenAPI200, readiness503, missing business endpoint404; every response had UUID request correlation and errors matched body/header IDs. Runtime OpenAPI contains only two health endpoints. [Evidence](artifacts/evidence/vercel-phase01.json). Deployed source matches GitHub commit471a653 except harmless CLI-added ignore metadata. Cloud uses default development settings; private local `.env` was excluded and cloud provider/database credentials were not configured. Full release belongs to later phases. Phase01 P01.01–08 accepted, not full challenge completion.
 
+## Session 008 — Phase02 real PostgreSQL implementation, 28/09/2026
+
+**Actual prompt:** “Ok, hãy thực hiện pharse 2 nhé”. Codex used local Python/PowerShell/Git and official SQLAlchemy/Alembic/Supabase documentation; no inference was dispatched for these checks.
+
+**Accepted work:** schema-qualified ORM models for six tables, immutable Alembic migration with cyclic FK ordering, private schema grants/RLS, NullPool psycopg async sessions with disabled prepared statements and transaction-local timeout/UTC settings, idempotent two-user Argon2id seed, database readiness and explicit live verification scripts. Missing seed passwords generated into private `.env`, never printed/committed. Migration ran on an observed empty gateway schema; repeated upgrade/drift check PASS.
+
+**Actual errors/corrections:** the first real readiness check exceeded the original2s budget for cold connections. Combined transaction settings into one round trip, reduced the readiness queries and set a bounded5s budget. Actual Uvicorn process checks then still returned503, although direct async app checks passed. Inspection showed Uvicorn0.54 selects a Proactor factory on Windows, overriding the policy set in Phase01. Changed the runner to use `asyncio:SelectorEventLoop` explicitly. Two actual subprocess restarts subsequently returned readiness200 and retained both users. Initial lint failures were corrected before completion.
+
+**VERIFIED:**22 pytest tests and Ruff PASS; Alembic upgrade repeat/check PASS.14 live schema/security/constraint checks PASS, including owner/claim/message FKs, unique sequence/role, positive sequence, nonnegative tokens, terminal timing and complete known usage. Synthetic fixtures rolled back. Argon2id password verification PASS; repeat seed preserves IDs/hashes even with a changed input password. Fresh app instances and two actual runner process restarts retain both users and return200. [Evidence](artifacts/evidence/phase02.json), [commands/limits](docs/PHASE02_DATABASE.md).
+
+**Limits:** backend currently uses the privileged supplied DB credential; least-privilege role is future hardening. Denied anon/authenticated grants and table RLS were verified, dashboard Data API exposed-schema settings not independently read. Public Vercel still serves Phase01 without cloud database credentials; Phase02 deployment belongs to later release. Authentication/LLM business endpoints/ledger/retry/limiter/usage remain unimplemented. No hours saved claimed.
+
 ## Development session template
 
 Copy this section for each real session:
