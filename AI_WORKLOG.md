@@ -84,6 +84,10 @@ This is an evidence log, not a list of planned accomplishments. Status labels: P
 
 **Limits:** backend currently uses the privileged supplied DB credential; least-privilege role is future hardening. Denied anon/authenticated grants and table RLS were verified, dashboard Data API exposed-schema settings not independently read. Public Vercel still serves Phase01 without cloud database credentials; Phase02 deployment belongs to later release. Authentication/LLM business endpoints/ledger/retry/limiter/usage remain unimplemented. No hours saved claimed.
 
+## Session 009 — complete Phase02 change record, 28/09/2026
+
+**Actual request:** “ghi lai toan bo thong tin thay đoi trong pharse 2”. Compared commit25e67c3, source and recorded evidence; created [Vietnamese full changelog](docs/PHASE02_CHANGELOG.md), covering all26 implementation files, database/config changes, private non-Git changes, actual bugs/corrections, verification and remaining limits. No application code, database objects or credentials changed in this documentation session; no new live test or inference claimed.
+
 ## Development session template
 
 Copy this section for each real session:

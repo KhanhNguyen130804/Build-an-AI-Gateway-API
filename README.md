@@ -13,7 +13,7 @@ Start with [PHASE_TASKS.md](PHASE_TASKS.md) for the current project assessment a
 | [PLAN.md](PLAN.md) | Scope, time budget, milestones, backlog, requirement coverage | Prepared |
 | [Stack comparison](docs/STACK_OPTIONS.md) | Tradeoffs, dependencies, proposed layouts | FastAPI selected |
 | [Architecture](docs/ARCHITECTURE.md) | Diagrams, workflow, security and reliability decisions | Design |
-| [Database](docs/DATABASE.md) and [Phase02 runbook](docs/PHASE02_DATABASE.md) | ORM, migration, seed, constraints and verification | Applied and verified on Supabase; usage calculations still design |
+| [Database](docs/DATABASE.md), [Phase02 runbook](docs/PHASE02_DATABASE.md), [full changelog](docs/PHASE02_CHANGELOG.md) | ORM, migration, seed, constraints and verification | Applied and verified on Supabase; usage calculations still design |
 | [API contract](docs/API.md) and [OpenAPI](docs/openapi.json) | Endpoints, schemas, error contract | Design, not a live API specification |
 | [Postman collection](examples/ai-gateway.postman_collection.json) | Importable happy-path and authorization examples | Prepared; not exercised against a server |
 | [Verification](docs/VERIFICATION.md) | Full acceptance plan |22 local tests and Phase02 live checks PASS; full T01–T24 still pending |
